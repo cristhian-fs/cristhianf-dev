@@ -1,0 +1,79 @@
+---
+import '@/styles/global.css'
+import '@/styles/typography.css'
+
+import CraftSheet from '@/components/craft-sheet.astro'
+import Head from '@/components/Head.astro'
+import PageHead from '@/components/PageHead.astro'
+import ThemeToggle from '@/components/ThemeToggle.astro'
+import { SITE } from '@/consts'
+import { getEntry, render } from 'astro:content'
+
+interface Props {
+  craftId: string
+  title?: string
+}
+
+const { craftId, title: titleProp } = Astro.props
+const entry = await getEntry('craft', craftId)
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let Content: any
+
+if (entry) {
+  const rendered = await render(entry)
+  Content = rendered.Content
+}
+
+const title = titleProp || entry?.data.title || craftId
+---
+
+<!doctype html>
+<html
+  class="bg-background text-foreground scheme-light-dark"
+  lang={SITE.locale}
+>
+  <Head>
+    <PageHead title={title} description={entry?.data.description} />
+  </Head>
+  <body class="bg-background text-foreground font-sans">
+    <div
+      class="fixed top-0 right-0 left-0 z-30 flex w-full items-center justify-between px-4 py-3"
+    >
+      <a
+        href="/craft"
+        class="text-muted-foreground hover:text-foreground relative flex items-center gap-1.5 text-sm transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m12 19-7-7 7-7"></path>
+          <path d="M19 12H5"></path>
+        </svg>
+        <p>craft</p>
+      </a>
+      <ThemeToggle />
+    </div>
+
+    <div class="h-dvh w-full">
+      <slot />
+    </div>
+
+    {
+      entry && Content && (
+        <CraftSheet title={entry.data.title}>
+          <Content />
+        </CraftSheet>
+      )
+    }
+  </body>
+</html>

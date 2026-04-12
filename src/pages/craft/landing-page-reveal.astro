@@ -1,0 +1,448 @@
+---
+import CraftLayout from '@/layouts/craft-layout.astro'
+import Logo from '@/content/craft/landing-page-reveal/logo.png'
+import LogoWhite from '@/content/craft/landing-page-reveal/logo-light.png'
+---
+
+<CraftLayout craftId="landing-page-reveal">
+  <div class="preloader-backdrop">
+    <div class="pb-row">
+      <div class="pb-col">
+        <p>ARC//117 Delta Trace</p>
+        <p>ARC//117 Delta Trace</p>
+        <p>ARC//117 Delta Trace</p>
+        <p>ARC//117 Delta Trace</p>
+        <p>ARC//117 Delta Trace</p>
+      </div>
+      <div class="pb-col">
+        <p>Sector / Hollow Frame</p>
+        <p>0.392 02SD 008923</p>
+      </div>
+      <div class="pb-col">
+        <p>Material / Unknown Fiber</p>
+        <p>Status / Soft Resonance</p>
+      </div>
+      <div class="pb-col">
+        <img id="pb-logo" src={Logo.src} alt="" />
+      </div>
+      <div class="pb-col">
+        <p>:::..:::.::::..:::</p>
+      </div>
+    </div>
+
+    <div class="pb-row">
+      <div class="pb-col">
+        <p>Surface Memory</p>
+      </div>
+      <div class="pb-col">
+        <p>// / / ///// / / / ///</p>
+      </div>
+      <div class="pb-col">
+        <p>Phase Offset > 17%</p>
+      </div>
+      <div class="pb-col">
+        <p>Fragments Aligning</p>
+        <p>Pattern Emerging</p>
+      </div>
+      <div class="pb-col">
+        <p>Collapse Pending</p>
+        <p>Return -- Layer Zero</p>
+      </div>
+      <div class="pb-col">
+        <p>F-9</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="preloader">
+    <div class="p-row">
+      <p>Initiating</p>
+    </div>
+    <div class="p-row">
+      <div class="p-col">
+        <div class="p-sub-col">
+          <p>Phase 01</p>
+          <p>Sequence</p>
+        </div>
+        <div class="p-sub-col">
+          <p>Signal Scan</p>
+          <p>07 Layers</p>
+        </div>
+      </div>
+      <div class="p-col">
+        <p>PX-17</p>
+      </div>
+    </div>
+
+    <div class="preloader-btn-container">
+      <img id="pbc-logo" src={LogoWhite.src} alt="" />
+      <p id="pbc-label">Engage</p>
+      <p id="pbc-outro-label">Access Granted</p>
+
+      <div class="pbc-svg-strokes">
+        <svg
+          viewBox="0 0 320 320"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            class="stroke-track"
+            cx="160"
+            cy="160"
+            r="155"
+            stroke="#2b2b2b"
+            stroke-width="2"
+            stroke-dasharray="974"
+            stroke-dashoffset="974"></circle>
+          <circle
+            class="stroke-progress"
+            cx="160"
+            cy="160"
+            r="155"
+            stroke="#fff"
+            stroke-width="2"
+            stroke-dasharray="974"
+            stroke-dashoffset="974"></circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="preloader-revealer"></div>
+    <h1>The system is now visible</h1>
+  </section>
+
+</CraftLayout>
+
+
+<style is:inline>
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Geist+Mono:wght@100..900&display=swap");
+
+:root{
+  --base-100: #fff;
+  --base-200: #7a7a7a;
+  --base-300: #000;
+}
+
+
+h1{
+  text-transform: uppercase;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(5rem, 15vw, 15rem);
+  font-weight: 800;
+  letter-spacing: -2%;
+  line-height: 0.8;
+}
+
+p{
+  text-transform: uppercase;
+  font-family: "Geist Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+h1 .word,
+p .line {
+  position: relative;
+  transform: translateY(100%);
+  will-change: transform;
+}
+
+.preloader-backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100svh;
+  background-color: var(--base-100);
+  color: var(--base-200);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 0;
+}
+
+.pb-row {
+  width: 100%;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.pb-row:nth-child(2){
+  align-items: flex-end;
+}
+
+.pb-row #pb-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.25rem;
+  border: 1px dashed var(--base-200);
+}
+
+.preloader{
+  position: fixed;
+  width: 100%;
+  height: 100svh;
+  background-color: var(--base-300);
+  color: var(--base-100);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  will-change: transform, clip-path;
+  z-index: 2;
+}
+
+
+.p-row{
+  width: 100%;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.p-row .p-col {
+  display: flex;
+  gap: 6rem;
+  align-items: flex-end;
+}
+
+.preloader-btn-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 20rem;
+  height: 20rem;
+}
+
+.pbc-svg-strokes,
+#pbc-logo,
+#pbc-label,
+#pbc-outro-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+
+#pbc-logo {
+  width: 4rem;
+  height: 4rem;
+}
+
+#pbc-label, #pbc-outro-label {
+  font-size: 0.9rem;
+}
+
+.pbc-svg-strokes,
+.pbc-svg-strokes svg{
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  padding: 1.5rem;
+  background-color: var(--base-300);
+  color: var(--base-100);
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  transform: scale(0.75);
+  will-change: transform;
+  z-index: 1;
+}
+
+.hero .preloader-revealer{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--base-100);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  will-change: clip-path;
+}
+
+.hero h1{
+  width: 90%
+}
+
+@media screen and (max-width: 1000px){
+  .pb-row .pb-col:nth-child(1),
+  .pb-row .pb-col:nth-child(2),
+  .pb-row .pb-col:nth-child(5) {
+    display: none;
+  }
+}
+</style>
+
+<script>
+  import gsap from 'gsap'
+  import { SplitText} from 'gsap/SplitText'
+  import CustomEase from 'gsap/CustomEase';
+
+  function setup(){
+    gsap.registerPlugin(SplitText, CustomEase);
+    CustomEase.create('hop', '0.9, 0, 0.1, 1');
+    CustomEase.create('glide', '0.8, 0, 0.2, 1');
+
+      let preloaderComplete: boolean = false;
+
+      const preloaderTexts = document.querySelectorAll('.preloader p');
+      const preloaderBtn = document.querySelector('.preloader-btn-container')
+      const btnOutlineTrack = document.querySelector('.stroke-track') as SVGCircleElement
+      const btnOutlineProgress = document.querySelector('.stroke-progress')
+      const svgPathLength = btnOutlineTrack.getTotalLength();
+
+      gsap.set([btnOutlineTrack, btnOutlineProgress], {
+        strokeDasharray: svgPathLength,
+        strokeDashoffset: svgPathLength
+      });
+
+      preloaderTexts.forEach((p) => { new SplitText(p, { type: 'lines', linesClass: 'line', mask: 'lines' }) });
+      new SplitText('.hero h1', { type: 'words', wordsClass: 'word', mask: 'words' });
+
+      const introTl = gsap.timeline({ delay: 1 });
+
+      introTl
+        .to('.preloader .p-row p .line', {
+          y: "0%", duration: 0.75, ease: 'power3.out', stagger: 0.1,
+        })
+        .to(btnOutlineTrack,
+          {
+            strokeDashoffset: 0,
+            duration: 2,
+            ease: 'hop'
+          },
+          "<"
+        )
+        .to(
+          ".pbc-svg-strokes svg",
+          {
+            rotation: 270,
+            duration: 2,
+            ease: 'hop'
+          },
+          "<"
+        )
+
+      const progressStops = [0.2, 0.25, 0.85, 1].map((base, i) => {
+        if(i === 3) return 1;
+        return base + (Math.random() - 0.5) * 0.1;
+      });
+
+      progressStops.forEach((stop, i) => {
+        introTl.to(btnOutlineProgress, {
+          strokeDashoffset: svgPathLength - svgPathLength * stop,
+          duration: 0.75,
+          ease: "glide",
+          delay: i === 0 ? 0.3 : 0.3 + Math.random() * 0.2
+        })
+      });
+
+      introTl.to(
+        "#pbc-logo",
+        {
+          opacity: 0,
+          duration: 0.75,
+          ease: "power1.out",
+        },
+        "-=0.25"
+      ).to(
+        preloaderBtn,
+        {
+          scale: 0.9,
+          duration: 1.5,
+          ease: 'hop',
+        },
+        "=-0.5"
+      ).to(
+        "#pbc-label .line",
+        {
+          y: "0%",
+          duration: 0.75,
+          ease: 'power3.out',
+          onComplete: () => {
+            preloaderComplete = true;
+          }
+        },
+        "-=0.75"
+      );
+
+      preloaderBtn?.addEventListener('click', () => {
+        if(!preloaderComplete) return;
+        preloaderComplete = true
+
+        const exitTl = gsap.timeline();
+
+        exitTl.to(".preloader", {
+          scale: 0.75,
+          duration: 1.25,
+          ease: 'hop',
+        }
+        ).to(
+          [btnOutlineTrack, btnOutlineProgress],
+          {
+            strokeDashoffset: -svgPathLength,
+            duration: 1.25,
+            ease: 'hop'
+          },
+          "<"
+        ).to(
+          "#pbc-label .line",
+          {
+            y: '-100%',
+            duration: 0.75,
+            ease: 'power3.out'
+          },
+          "-=1.25"
+        )
+        .to(
+          "#pbc-outro-label .line",
+          {
+            y: '0%',
+            duration: 0.75,
+            ease: 'power3.out'
+          },
+          "-=0.75"
+        )
+        .to('.preloader', {
+          clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%',
+          duration: 1.5,
+          ease: 'hop'
+        })
+        .to('.preloader-revealer',
+          {
+            clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%',
+            duration: 1.5,
+            ease: 'hop',
+            onComplete: () => {
+              gsap.set('.preloader', { display: 'none' });
+            }
+          },
+          "-=1.45"
+        )
+        .to('.hero', {
+          scale: 1,
+          duration: 1.25,
+          ease: 'hop'
+        })
+        .to('.hero h1 .word', {
+          y: '0%',
+          duration: 1,
+          ease: 'glide',
+          stagger: 0.05,
+        }, "-=1.75")
+      })
+
+  }
+
+  document.addEventListener('astro:page-load', setup)
+</script>
