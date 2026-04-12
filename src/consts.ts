@@ -95,11 +95,11 @@ export const TECHSTACK: Tech[] = [
     href: 'https://firebase.google.com/',
     icon: 'firebase',
   },
-  // {
-  //   name: 'Hono',
-  //   href: 'https://hono.dev/',
-  //   icon: 'hono',
-  // },
+  {
+    name: 'Hono',
+    href: 'https://hono.dev/',
+    icon: 'hono',
+  },
   {
     name: 'Javascript',
     icon: 'javascript',
@@ -107,5 +107,17 @@ export const TECHSTACK: Tech[] = [
   {
     name: 'Typescript',
     icon: 'typescript',
+  },
+  {
+    name: 'neovim',
+    icon: 'neovim',
+  },
+  {
+    name: 'Shell script',
+    icon: 'bash',
+  },
+  {
+    name: 'Docker',
+    icon: 'docker',
   },
 ]

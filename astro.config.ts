@@ -74,7 +74,20 @@ export default defineConfig({
     mdx(),
     react(),
     sitemap(),
-    icon(),
+    icon({
+      svgoOptions: {
+        plugins: [
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                cleanupIds: false,
+              },
+            },
+          },
+        ],
+      },
+    }),
   ],
   vite: {
     plugins: [tailwindcss()],
