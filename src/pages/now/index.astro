@@ -1,0 +1,67 @@
+---
+import Aside from '@/components/AsideNavigation.astro'
+import Link from '@/components/Link.astro'
+import PageHead from '@/components/PageHead.astro'
+import { buttonVariants } from '@/components/ui/button'
+import Layout from '@/layouts/Layout.astro'
+import { cn } from '@/lib/utils'
+
+const lastUpdated = '8th April 2026'
+---
+
+<Layout class="relative max-w-7xl px-4 pt-16">
+  <PageHead slot="head" title="Now" />
+  <main
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-[1fr_35rem_1fr] md:gap-8"
+  >
+    <Aside />
+    <div class="space-y-20">
+      <section class="flex flex-col">
+        <p class="text-foreground text-balance">
+          A snapshot of what I'm focused on right now.
+        </p>
+        <p class="text-muted-foreground mt-2 text-balance">
+          This is a
+          <Link
+            href="https://nownownow.com/about"
+            class={cn(
+              buttonVariants({ variant: 'link', size: 'sm' }),
+              'px-0 py-0 text-foreground',
+            )}
+            external
+          >
+            now page
+          </Link>, and if you have your own site, you should make one, too.
+        </p>
+        <span class="text-muted-foreground mt-8 text-sm"
+          >Updated {lastUpdated}</span
+        >
+      </section>
+
+      <section class="flex flex-col gap-4">
+        <p class="text-muted-foreground font-mono text-sm">/building</p>
+        <p class="text-muted-foreground text-sm text-balance">
+          Working on this site — refining the design, writing more, and using it
+          as a space to think out loud. Also exploring some side projects around
+          running and training tools.
+        </p>
+      </section>
+
+      <section class="flex flex-col gap-4">
+        <p class="text-muted-foreground font-mono text-sm">/learning</p>
+        <p class="text-muted-foreground text-sm text-balance">
+          Starting to learn some shell scripting. And planning to start deep
+          into AI knowledge.
+        </p>
+      </section>
+
+      <section class="flex flex-col gap-4">
+        <p class="text-muted-foreground font-mono text-sm">/reading</p>
+        <p class="text-muted-foreground text-sm text-balance">
+          Currently reading "Memórias do subsolo" from Fiódor Dostoiévski. The
+          next one in my list is 1984 from George Owel.
+        </p>
+      </section>
+    </div>
+  </main>
+</Layout>
