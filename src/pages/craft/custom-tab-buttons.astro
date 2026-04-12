@@ -26,7 +26,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
     let activeBtn =
       document.querySelector('[data-tab-btn].active') || tabBtns[0]
 
-    tabBtns.forEach((btn, index) => {
+    tabBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         activeBtn = btn
         animatePseudoElement({

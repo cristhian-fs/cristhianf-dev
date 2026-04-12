@@ -1,6 +1,5 @@
 ---
 import Link from '@/components/Link.astro'
-import { Icon } from 'astro-icon/components'
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
@@ -30,10 +29,6 @@ const projectDate = new Date(project.data.startDate).getFullYear()
         •
         <span class="text-muted-foreground text-sm">{projectDate}</span>
       </div>
-      <!-- <Icon -->
-      <!--   name="lucide:chevron-right" -->
-      <!--   class="size-4 opacity-0 transition-opacity group-hover:opacity-100" -->
-      <!-- /> -->
     </div>
     <p class="text-muted-foreground text-sm">
       {project.data.description}

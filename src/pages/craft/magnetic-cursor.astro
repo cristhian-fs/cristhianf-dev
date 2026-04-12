@@ -36,7 +36,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
   import gsap from 'gsap'
 
   function setup() {
-    const cursor = document.querySelector('#cursor')
+    const cursor = document.querySelector('#cursor') as Element
 
     let isStuck = false
 
@@ -51,7 +51,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
       y: 0,
     }
 
-    function updateCursorPosition(e) {
+    function updateCursorPosition(e: MouseEvent) {
       mouse.x = e.clientX
       mouse.y = e.clientY
     }
@@ -71,12 +71,13 @@ import CraftLayout from '@/layouts/craft-layout.astro'
 
     updateCursor()
 
-    function handleMouseEnter(e) {
+    function handleMouseEnter(e: MouseEvent) {
       isStuck = true
-      const targetBox = e.target.getBoundingClientRect()
+      const target = e.target as HTMLElement  // <-- cast aqui
+      const targetBox = target.getBoundingClientRect()
       cursor.classList.add('active')
 
-      const targetStyles = getComputedStyle(e.target)
+      const targetStyles = getComputedStyle(target)
 
       gsap.to(cursor, {
         width: targetBox.width,
@@ -89,7 +90,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
       })
     }
 
-    function handleMouseLeave(e) {
+    function handleMouseLeave(e: MouseEvent) {
       isStuck = false
       cursor.classList.remove('active')
       gsap.to(cursor, {
@@ -103,8 +104,8 @@ import CraftLayout from '@/layouts/craft-layout.astro'
 
     document
       .querySelector('.craft-item__container')
-      .addEventListener('mousemove', (e) => {
-        updateCursorPosition(e)
+      ?.addEventListener('mousemove', (e) => {
+        updateCursorPosition(e as MouseEvent)
       })
 
     document.querySelectorAll('a').forEach((link) => {

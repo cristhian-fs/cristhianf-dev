@@ -38,7 +38,6 @@ const authors = await parseAuthors(post.data.authors ?? [])
 
 const isCurrentSubpost = isSubpost(currentPostId)
 const navigation = await getAdjacentPosts(currentPostId)
-const parentPost = isCurrentSubpost ? await getParentPost(currentPostId) : null
 const hasChildPosts = await hasSubposts(currentPostId)
 ---
 

@@ -1,23 +1,12 @@
 ---
-import {
-  getCombinedReadingTime,
-  getSubpostCount,
-  isSubpost,
-  parseAuthors,
-} from '@/lib/data-utils'
-import { formatDate } from '@/lib/utils'
 import type { CollectionEntry } from 'astro:content'
 import Link from './Link.astro'
 
 interface Props {
-  entry: CollectionEntry<'blog'>
+  entry: CollectionEntry<'writing'>
 }
 
 const { entry } = Astro.props
-const formattedDate = formatDate(entry.data.date)
-const readTime = await getCombinedReadingTime(entry.id)
-const authors = await parseAuthors(entry.data.authors ?? [])
-const subpostCount = !isSubpost(entry.id) ? await getSubpostCount(entry.id) : 0
 ---
 
 <div class="group project-card transition-colors">

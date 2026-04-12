@@ -3,7 +3,6 @@ import Aside from '@/components/AsideNavigation.astro'
 import BlogCard from '@/components/BlogCard.astro'
 import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
-import { badgeVariants } from '@/components/ui/badge'
 import Layout from '@/layouts/Layout.astro'
 import { getAllTags, getPostsByTag, getProjectsByTag } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
@@ -34,7 +33,7 @@ const { tag, posts, projects } = Astro.props
     description={`A collection of posts tagged with ${tag}.`}
   />
   <main
-    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
   >
     <Aside />
     <div class="space-y-8">
