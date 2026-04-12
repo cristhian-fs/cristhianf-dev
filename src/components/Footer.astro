@@ -1,14 +1,12 @@
 ---
-import { Separator } from '@/components/ui/separator'
 import { SOCIAL_LINKS } from '@/consts'
-import Link from './Link.astro'
 import SocialIcons from './SocialIcons.astro'
 import ThemeToggle from './ThemeToggle.astro'
 ---
 
-<footer class="py-2 w-full bg-popover border-t z-10 relative mt-10">
+<footer class="bg-popover relative z-10 mt-10 w-full border-t py-2">
   <div
-    class="mx-auto flex max-w-2xl flex-col items-center justify-center gap-y-2 px-4 sm:flex-row sm:justify-between"
+    class="mx-auto flex max-w-[35rem] flex-col items-center justify-center gap-y-2 px-4 sm:flex-row sm:justify-between"
   >
     <div class="flex flex-wrap items-center justify-center gap-x-2 text-center">
       <span class="text-muted-foreground text-sm">
@@ -16,6 +14,6 @@ import ThemeToggle from './ThemeToggle.astro'
       </span>
     </div>
     <!-- <SocialIcons links={SOCIAL_LINKS} /> -->
-     <ThemeToggle />
+    <ThemeToggle />
   </div>
 </footer>

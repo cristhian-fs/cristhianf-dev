@@ -1,6 +1,7 @@
 ---
+import { badgeVariants } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
-import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
 import type { CollectionEntry } from 'astro:content'
 import Link from './Link.astro'
 
@@ -9,36 +10,37 @@ interface Props {
 }
 
 const { entry } = Astro.props
-const formattedDate = formatDate(entry.data.date);
 ---
 
-<div
-  class="hover:bg-secondary/50 rounded-xl border p-1 transition-colors duration-300 ease-in-out"
+<Link
+  href={`/${entry.collection}/${entry.id}`}
+  class="group flex flex-col gap-y-1"
 >
-  <Link
-    href={`/${entry.collection}/${entry.id}`}
-    class="flex flex-col gap-4"
-  >
-    {
-      entry.data.image && (
-        <div class="sm:shrink-0">
-          <Image
-            src={entry.data.image}
-            alt={entry.data.title}
-            width={1200}
-            height={630}
-            class="object-cover rounded-md"
-          />
-        </div>
-      )
-    }
-
-    <div class="grow px-2">
-      <h3 class="mb-1 font-medium">{entry.data.title}</h3>
-      <div
-        class="text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2 text-sm"
-      >
-        <span>{formattedDate}</span>
-    </div>
-  </Link>
-</div>
+  <div class="flex items-center justify-between gap-4">
+    <span
+      class="decoration-muted-foreground font-medium underline-offset-4 group-hover:underline"
+    >
+      {entry.data.title}
+    </span>
+    <span class="text-muted-foreground shrink-0 text-sm">
+      {formatDate(entry.data.date)}
+    </span>
+  </div>
+  {
+    entry.data.description && (
+      <p class="text-muted-foreground text-sm">{entry.data.description}</p>
+    )
+  }
+  {
+    entry.data.tags && entry.data.tags.length > 0 && (
+      <div class="mt-1 flex flex-wrap gap-1.5">
+        {entry.data.tags.map((tag) => (
+          <span class={badgeVariants({ variant: 'muted' })}>
+            <Icon name="lucide:hash" class="size-3" />
+            {tag}
+          </span>
+        ))}
+      </div>
+    )
+  }
+</Link>

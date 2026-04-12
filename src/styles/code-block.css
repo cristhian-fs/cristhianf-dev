@@ -49,15 +49,15 @@
   overflow: hidden scroll !important;
 }
 
-.expressive-code pre code::-webkit-scrollbar{
+.expressive-code pre code::-webkit-scrollbar {
   background-color: transparent !important;
   width: 4px !important;
   padding: 2px !important;
 }
 
-.expressive-code pre code::-webkit-scrollbar-thumb{
+.expressive-code pre code::-webkit-scrollbar-thumb {
   background: var(--color-secondary) !important;
 }
-.expressive-code .ec-line .code{
+.expressive-code .ec-line .code {
   border-inline-start: 0px !important;
 }

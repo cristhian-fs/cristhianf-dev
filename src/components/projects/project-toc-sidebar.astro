@@ -38,28 +38,26 @@ function getHeadingMargin(depth: number): string {
             class="flex list-none flex-col gap-y-2 px-4 xl:mr-8"
             id="table-of-contents"
           >
-            {
-              headings.map((heading) => (
-                <li
-                  class={cn(
-                    'text-foreground/60 px-4 text-sm xl:p-0',
-                    getHeadingMargin(heading.depth),
-                  )}
+            {headings.map((heading) => (
+              <li
+                class={cn(
+                  'text-foreground/60 px-4 text-sm xl:p-0',
+                  getHeadingMargin(heading.depth),
+                )}
+              >
+                <a
+                  href={`#${heading.slug}`}
+                  class="marker:text-foreground/30 list-item list-disc underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit xl:list-none"
+                  data-heading-link={heading.slug}
                 >
-                  <a
-                    href={`#${heading.slug}`}
-                    class="marker:text-foreground/30 list-item list-disc underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit xl:list-none"
-                    data-heading-link={heading.slug}
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))
-            }
+                  {heading.text}
+                </a>
+              </li>
+            ))}
           </ul>
-      </div>
-    </ScrollArea>
-  </div>
+        </div>
+      </ScrollArea>
+    </div>
   )
 }
 

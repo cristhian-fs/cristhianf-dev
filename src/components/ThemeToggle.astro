@@ -1,125 +1,98 @@
 ---
-import { ThemeToggleTooltip } from "@/components/theme-toggle-tooltip"
+import { cn } from '@/lib/utils'
+import { Moon, Sun, SunMedium } from 'lucide-react'
+import { buttonVariants } from './ui/button'
 ---
-<ThemeToggleTooltip client:load />
+
+<button
+  theme-toggle-btn
+  class={cn(
+    buttonVariants({ variant: 'ghost', size: 'icon' }),
+    'theme-toggle-btn pointer-fine:size-6 pointer-fine:cursor-pointer pointer-fine:rounded-sm',
+  )}
+>
+  <Moon className="theme-icon theme-icon-dark size-4" />
+  <Sun className="theme-icon theme-icon-light size-4" />
+  <SunMedium className="theme-icon theme-icon-sunny size-4" />
+  <span class="sr-only">Toggle theme</span>
+</button>
+
+<style is:global>
+  html.dark .theme-icon-light,
+  html.dark .theme-icon-sunny,
+  html.light .theme-icon-dark,
+  html.light .theme-icon-sunny,
+  html.sunny .theme-icon-dark,
+  html.sunny .theme-icon-light,
+  html:not(.dark):not(.light):not(.sunny) .theme-icon-dark,
+  html:not(.dark):not(.light):not(.sunny) .theme-icon-sunny {
+    display: none;
+  }
+</style>
 
 <script is:inline data-astro-rerun>
   const theme = (() => {
-    const localStorageTheme = localStorage?.getItem('crisfsdev-theme') ?? ''
-    if (['dark', 'light'].includes(localStorageTheme)) {
-      return localStorageTheme
-    }
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark'
-    }
+    const stored = localStorage?.getItem('crisfsdev-theme') ?? ''
+    if (['dark', 'light', 'sunny'].includes(stored)) return stored
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'
     return 'light'
   })()
 
-  if (theme === 'light') {
-    document.documentElement.classList.remove('dark')
-  } else {
-    document.documentElement.classList.add('dark')
-  }
-
-  window.localStorage.setItem('theme', theme)
+  document.documentElement.classList.remove('dark', 'light', 'sunny')
+  document.documentElement.classList.add(theme)
+  window.localStorage.setItem('crisfsdev-theme', theme)
 </script>
 
 <script>
-  function handleToggleClick(dataTheme: 'light' | 'dark') {
-    const element = document.documentElement
+  const THEMES = ['dark', 'light', 'sunny'] as const
+  type Theme = (typeof THEMES)[number]
 
-    element.classList.add('disable-transitions')
-
-    element.classList.remove('light', 'dark')
-
-    if (dataTheme === 'dark') {
-      element.classList.add('dark')
-      document.querySelector(`.theme-toggle-btn[data-site-theme="dark"]`)?.classList.toggle('active')
-    } else if (dataTheme === 'light') {
-      element.classList.add('light')
-      document.querySelector(`.theme-toggle-btn[data-site-theme="light"]`)?.classList.toggle('active')
-    } 
-
-    window.getComputedStyle(element).getPropertyValue('opacity')
-
-    requestAnimationFrame(() => {
-      element.classList.remove('disable-transitions')
-    })
-
-    localStorage.setItem('crisfsdev-theme', dataTheme)
+  function isTheme(v: string | null): v is Theme {
+    return v !== null && (THEMES as readonly string[]).includes(v)
   }
 
+  function getCurrentTheme(): Theme {
+    const el = document.documentElement
+    if (el.classList.contains('dark')) return 'dark'
+    if (el.classList.contains('sunny')) return 'sunny'
+    return 'light'
+  }
+
+  function getNextTheme(current: Theme): Theme {
+    return THEMES[(THEMES.indexOf(current) + 1) % THEMES.length]
+  }
+
+  function applyTheme(theme: Theme) {
+    const el = document.documentElement
+    el.classList.add('disable-transitions')
+    el.classList.remove('dark', 'light', 'sunny')
+    el.classList.add(theme)
+    window.getComputedStyle(el).getPropertyValue('opacity')
+    requestAnimationFrame(() => el.classList.remove('disable-transitions'))
+    localStorage.setItem('crisfsdev-theme', theme)
+    document.dispatchEvent(new CustomEvent('theme-changed', { detail: theme }))
+  }
 
   function initThemeToggle() {
-    const themeBtns = document.querySelectorAll('.theme-toggle-btn')
-    if (themeBtns) {
-      themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          themeBtns.forEach(btn => btn.classList.remove('active'))
-          btn.classList.add('active')
-          handleToggleClick(
-            btn.getAttribute('data-site-theme') as 'dark' | 'light'
-          )
-        })
-      })
-    }
-  }
-
-  function handleButtonClassOnLoad(){
-    const element = document.documentElement
-    const storedTheme = localStorage.getItem('crisfsdev-theme')
-    if (storedTheme === 'dark') {
-      element.classList.add('dark')
-      document.querySelector(`.theme-toggle-btn[data-site-theme="dark"]`)?.classList.add('active')
-    } else {
-      element.classList.remove('dark')
-      document.querySelector(`.theme-toggle-btn[data-site-theme="light"]`)?.classList.add('active')
-    }
+    const btns = document.querySelectorAll('[theme-toggle-btn]')
+    btns.forEach((btn) => {
+      btn?.addEventListener('click', () =>
+        applyTheme(getNextTheme(getCurrentTheme())),
+      )
+    })
   }
 
   initThemeToggle()
-  handleButtonClassOnLoad()
 
   document.addEventListener('astro:after-swap', () => {
-    const storedTheme = localStorage.getItem('crisfsdev-theme')
-    const element = document.documentElement
-
-    element.classList.add('disable-transitions')
-
-    window.getComputedStyle(element).getPropertyValue('opacity')
-
-    if (storedTheme === 'dark') {
-      element.classList.add('dark')
-      document.querySelector(`.theme-toggle-btn[data-site-theme="dark"]`)?.classList.add('active')
-    } else if (storedTheme === 'system') {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        element.classList.add('dark');
-      }
-    } else {
-      element.classList.remove('dark')
-      document.querySelector(`.theme-toggle-btn[data-site-theme="light"]`)?.classList.add('active')
-    }
-
-    requestAnimationFrame(() => {
-      element.classList.remove('disable-transitions')
-    })
-
+    const stored = localStorage.getItem('crisfsdev-theme')
+    if (isTheme(stored)) applyTheme(stored)
     initThemeToggle()
-  });
+  })
 
   document.addEventListener('keydown', (event) => {
-  if (event.key.toLowerCase() === 't') {
-    const element = document.documentElement
-    const isDark = element.classList.toggle('dark') // 👈 alterna automaticamente
-
-    // Atualiza os botões
-    document
-      .querySelectorAll('.theme-toggle-btn')
-      .forEach(btn => btn.classList.remove('active'))
-
-    const targetTheme = isDark ? 'dark' : 'light'
-    handleToggleClick(targetTheme)
-  }
-})
-
+    if (event.key.toLowerCase() === 't') {
+      applyTheme(getNextTheme(getCurrentTheme()))
+    }
+  })
 </script>

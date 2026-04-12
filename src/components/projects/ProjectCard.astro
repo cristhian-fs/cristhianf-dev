@@ -1,9 +1,6 @@
 ---
 import Link from '@/components/Link.astro'
-import { Badge } from '@/components/ui/badge'
-import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
-import { Image } from 'astro:assets'
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
@@ -15,29 +12,31 @@ const { project } = Astro.props
 const projectDate = new Date(project.data.startDate).getFullYear()
 ---
 
-<div
-  class="project-card relative group p-4"
->
-  <Link
-    href={project.data.link}
-    class="flex flex-col sm:flex-row gap-4"
-    external={project.data.link.startsWith('http')}
-  >
-
-    <div class="grow">
-      <div class="flex items-center justify-between">
-        <div class="flex gap-x-2 items-center mb-1">
-          <h3 class="relative font-medium after:h-[1px] after:absolute after:w-0 after:left-0 after:bottom-0 after:bg-foreground after:transition-all after:duration-300 group-hover:after:w-full after:origin-bottom-left hover:after:origin-bottom-right">
+<div class="project-card group relative">
+  <div class="grow">
+    <div class="flex items-center justify-between">
+      <div class="mb-1 flex items-center gap-x-2">
+        <Link
+          href={project.data.link}
+          class="flex flex-col gap-4 sm:flex-row"
+          external={project.data.link.startsWith('http')}
+        >
+          <h3
+            class="after:bg-foreground relative font-medium after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:origin-bottom-left after:transition-all after:duration-300 hover:after:w-full hover:after:origin-bottom-right"
+          >
             {project.data.name}
           </h3>
-          •
-          <span class="text-muted-foreground text-sm">{projectDate}</span>
-        </div>
-        <Icon name="lucide:chevron-right" class="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
+        </Link>
+        •
+        <span class="text-muted-foreground text-sm">{projectDate}</span>
       </div>
-      <p class="text-muted-foreground text-sm">
-        {project.data.description}
-      </p>
+      <!-- <Icon -->
+      <!--   name="lucide:chevron-right" -->
+      <!--   class="size-4 opacity-0 transition-opacity group-hover:opacity-100" -->
+      <!-- /> -->
     </div>
-  </Link>
+    <p class="text-muted-foreground text-sm">
+      {project.data.description}
+    </p>
+  </div>
 </div>
