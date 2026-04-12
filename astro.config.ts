@@ -38,7 +38,7 @@ export default defineConfig({
         },
       },
       styleOverrides: {
-        codeFontSize: '0.75rem',
+        codeFontSize: '0.875rem',
         borderWidth: '0px',
         borderColor: 'transparent',
         codeFontFamily: 'var(--font-mono)',
@@ -69,7 +69,7 @@ export default defineConfig({
           foreground: 'var(--muted-foreground)',
         },
         uiFontFamily: 'var(--font-sans)',
-      },    
+      },
     }),
     mdx(),
     react(),
