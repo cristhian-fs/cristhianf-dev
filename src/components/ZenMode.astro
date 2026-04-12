@@ -1,0 +1,20 @@
+---
+import { buttonVariants } from './ui/button'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+---
+
+<style is:global>
+  html.zen-mode .eye-open-icon,
+  html:not(.zen-mode) .eye-closed-icon{
+    display: none;
+  }
+</style>
+<button
+  onclick="document.documentElement.classList.toggle('zen-mode'); localStorage.setItem('crisfsdev-zen', document.documentElement.classList.contains('zen-mode'))"
+  class={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'pointer-fine:size-6 pointer-fine:cursor-pointer pointer-fine:rounded-sm')}
+>
+  <Icon name="lucide:eye" class="eye-open-icon size-4" />
+  <Icon name="lucide:eye-closed" class="eye-closed-icon size-4" />
+  <span class="sr-only">Toggle site zen mode</span>
+</button>

@@ -1,0 +1,194 @@
+---
+import Link from '@/components/Link.astro'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+import ThemeToggle from './ThemeToggle.astro'
+import ZenMode from './ZenMode.astro'
+
+const { className } = Astro.props
+
+const pathname = Astro.url.pathname
+
+const isActive = (href: string) => {
+  if (href === '/') return pathname === '/'
+  return pathname === href || pathname.startsWith(href + '/')
+}
+
+const asideNavigation = [
+  {
+    label: 'Home',
+    href: '/',
+  },
+  {
+    label: 'Projects',
+    href: '/projects',
+  },
+  {
+    label: 'Writing',
+    href: '/writing',
+    subItems: [{ label: 'Coding', href: '/writing/coding' }],
+  },
+  {
+    label: 'Craft',
+    href: '/craft',
+  },
+  {
+    label: 'Reading List',
+    href: '/reading-list',
+  },
+  {
+    label: 'About',
+    href: '/about',
+  },
+]
+---
+
+<style is:global>
+  .aside-navigation {
+    transition: 0.2s var(--power3-in-out);
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0px);
+  }
+
+  html.zen-mode .aside-navigation {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-40px);
+    filter: blur(8px);
+  }
+</style>
+
+<aside class={cn('max-w-3xs md:sticky md:top-8 aside-navigation', className)}>
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg leading-none font-medium">Cristhian F.</h3>
+    <button
+      id="aside-toggle"
+      class="text-muted-foreground hover:text-foreground transition-colors md:hidden"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <Icon name="lucide:menu" class="block size-4 [.aside-open_&]:hidden" />
+      <Icon name="lucide:x" class="hidden size-4 [.aside-open_&]:block" />
+    </button>
+  </div>
+
+  <div id="aside-content" class="hidden md:block">
+    <div class="mt-3 flex items-center justify-start gap-4">
+      <Link
+        href="https://github.com/cristhian-fs"
+        class={cn(
+          buttonVariants({ variant: 'link', size: 'sm' }),
+          'has-[>svg]:px-0',
+        )}
+        external
+      >
+        <Icon name="lucide:github" class="size-4" />
+        <span class="sr-only">Github</span>
+      </Link>
+      <Link
+        href="mailto:contato@cristhianf.dev"
+        class={cn(
+          buttonVariants({ variant: 'link', size: 'sm' }),
+          'has-[>svg]:px-0',
+        )}
+        external
+      >
+        <Icon name="lucide:mail" class="size-4" />
+        <span class="sr-only">Mail</span>
+      </Link>
+      <Link
+        href="https://linkedin.com/in/cristhian-fs"
+        class={cn(
+          buttonVariants({ variant: 'link', size: 'sm' }),
+          'has-[>svg]:px-0',
+        )}
+        external
+      >
+        <Icon name="lucide:linkedin" class="size-4" />
+        <span class="sr-only">Linkedin</span>
+      </Link>
+    </div>
+    <div class="mt-4 w-full">
+      <span
+        class="text-muted-foreground inline-block w-full border-b pb-2 font-mono text-xs tracking-wide uppercase"
+        >Contents</span
+      >
+      <div class="mt-2 flex flex-col gap-2">
+        {
+          asideNavigation.map((link, idx) => (
+            <div class="flex flex-col gap-2">
+              <Link
+                href={link.href}
+                class={cn(
+                  buttonVariants({ size: 'sm', variant: 'ghost' }),
+                  'relative w-full justify-start py-0 no-underline hover:no-underline',
+                )}
+              >
+                <span
+                  class={cn(
+                    'bg-foreground absolute top-1/2 -left-3 size-1.5 -translate-y-1/2 rounded-full transition-opacity',
+                    isActive(link.href) ? 'opacity-100' : 'opacity-0',
+                  )}
+                />
+                <span class="shrink-0">{link.label}</span>
+                <span
+                  class="mx-1 flex-1"
+                  style="height:1px;background-image:repeating-linear-gradient(to right,currentColor 0,currentColor 2px,transparent 2px,transparent 8px);opacity:0.35"
+                />
+                <span class="text-muted-foreground shrink-0 text-xs">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
+              </Link>
+              {link.subItems && (
+                <div class="ml-4 flex flex-col gap-1">
+                  {link.subItems.map((subItem, subItemIdx) => (
+                    <Link
+                      href={subItem.href}
+                      class={cn(
+                        buttonVariants({ size: 'sm', variant: 'ghost' }),
+                        'relative w-full justify-start py-0 text-sm no-underline hover:no-underline',
+                      )}
+                    >
+                      <span
+                        class={cn(
+                          'bg-foreground absolute top-1/2 -left-3 size-1.5 -translate-y-1/2 rounded-full transition-opacity',
+                          isActive(subItem.href) ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      <span class="shrink-0">{subItem.label}</span>
+                      <span
+                        class="mx-1 flex-1"
+                        style="height:1px;background-image:repeating-linear-gradient(to right,currentColor 0,currentColor 2px,transparent 2px,transparent 8px);opacity:0.35"
+                      />
+                      <span class="text-muted-foreground shrink-0 text-xs">
+                        {String(idx + 1).padStart(2, '0')}.{subItemIdx + 1}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <div class="mt-4 flex w-full items-center gap-3">
+      <ThemeToggle />
+      <ZenMode />
+    </div>
+  </div>
+</aside>
+
+<script>
+  const toggle = document.getElementById('aside-toggle')
+  const content = document.getElementById('aside-content')
+  const aside = toggle?.closest('aside')
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = aside?.classList.toggle('aside-open')
+    toggle.setAttribute('aria-expanded', String(!!isOpen))
+    content?.classList.toggle('hidden')
+  })
+</script>
