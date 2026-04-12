@@ -1,34 +1,31 @@
 ---
-import { getSubpostsForParent } from '@/lib/data-utils';
-import { formatDate } from '@/lib/utils';
-import { Separator } from './ui/separator';
+import { getSubpostsForParent } from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
+import { Separator } from './ui/separator'
 
 interface Props {
   parentId: string
 }
 
-const { parentId } = Astro.props;
-const subposts = await getSubpostsForParent(parentId);
+const { parentId } = Astro.props
+const subposts = await getSubpostsForParent(parentId)
 ---
 
 <div class="flex flex-col gap-2">
-  <span class="text-sm text-muted-foreground">Development Chapters</span>
+  <span class="text-muted-foreground text-sm">Development Chapters</span>
   <Separator />
-  <ul class="flex flex-col gap-y-2 list-none !my-0 !mt-0 !ml-0">
+  <ul class="!my-0 !mt-0 !ml-0 flex list-none flex-col gap-y-2">
     {
       subposts.map((subpost) => (
-        <li class="text-sm p-0 m-0">
-          <a href={`/blog/${subpost.id}`} class="no-underline group">
-            <div class="flex items-center justify-between group-hover:bg-muted/50 group-hover:transition-opacity px-2 py-1">
-              <span class="text-base">
-                {subpost.data.title}
-              </span>
-              <span>
-                {formatDate(subpost.data.date)}
-              </span>
+        <li class="m-0 p-0 text-sm">
+          <a href={`/writing/${subpost.id}`} class="group no-underline">
+            <div class="group-hover:bg-muted/50 flex items-center justify-between px-2 py-1 group-hover:transition-opacity">
+              <span class="text-base">{subpost.data.title}</span>
+              <span>{formatDate(subpost.data.date)}</span>
             </div>
           </a>
         </li>
-    ))}
+      ))
+    }
   </ul>
 </div>

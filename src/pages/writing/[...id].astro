@@ -1,0 +1,180 @@
+---
+import Aside from '@/components/AsideNavigation.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import PostHead from '@/components/PostHead.astro'
+import PostNavigation from '@/components/PostNavigation.astro'
+import SubpostsHeader from '@/components/SubpostsHeader.astro'
+import SubpostsSidebar from '@/components/SubpostsSidebar.astro'
+import TOCHeader from '@/components/TOCHeader.astro'
+import { Button } from '@/components/ui/button'
+import Layout from '@/layouts/Layout.astro'
+import {
+  getAdjacentPosts,
+  getAllPostsAndSubposts,
+  getParentId,
+  getParentPost,
+  hasSubposts,
+  isSubpost,
+  parseAuthors,
+} from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import { render } from 'astro:content'
+
+export async function getStaticPaths() {
+  const posts = await getAllPostsAndSubposts()
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: post,
+  }))
+}
+
+const post = Astro.props
+const currentPostId = Astro.params.id
+const { Content, headings } = await render(post)
+const authors = await parseAuthors(post.data.authors ?? [])
+
+const isCurrentSubpost = isSubpost(currentPostId)
+const navigation = await getAdjacentPosts(currentPostId)
+const parentPost = isCurrentSubpost ? await getParentPost(currentPostId) : null
+const hasChildPosts = await hasSubposts(currentPostId)
+---
+
+<Layout class="relative max-w-7xl px-4 pt-16">
+  <PostHead slot="head" post={post} />
+  {
+    (hasChildPosts || isCurrentSubpost) && (
+      <SubpostsHeader
+        slot="subposts-navigation"
+        parentId={isCurrentSubpost ? getParentId(currentPostId) : currentPostId}
+      />
+    )
+  }
+  {
+    headings?.length > 0 &&
+      !(
+        isCurrentSubpost &&
+        headings.length === 1 &&
+        headings[0].text === post.data.title
+      ) && <TOCHeader slot="table-of-contents" headings={headings} />
+  }
+
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside className="sticky top-0" />
+    <div class="space-y-10">
+      <div class="flex flex-col gap-y-3">
+        <Breadcrumbs
+          items={[
+            { label: 'Writing', href: '/writing', },
+            { label: post.data.title, },
+          ]} 
+        />
+
+        <h1
+          class="scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl"
+          id="post-title"
+        >
+          {post.data.title}
+        </h1>
+        <div class="text-muted-foreground flex flex-wrap items-center gap-x-3 text-sm">
+          {
+            authors.length > 0 &&
+              authors.map((author) => (
+                <div class="flex items-center gap-x-1.5">
+                  <Image
+                    src={author.avatar}
+                    alt={author.name}
+                    width={18}
+                    height={18}
+                    class="rounded-full"
+                  />
+                  {author.isRegistered ? (
+                    <Link
+                      href={`/authors/${author.id}`}
+                      underline
+                      class="text-foreground"
+                    >
+                      {author.name}
+                    </Link>
+                  ) : (
+                    <span>{author.name}</span>
+                  )}
+                </div>
+              ))
+          }
+          <span>{formatDate(post.data.date)}</span>
+        </div>
+        {
+          post.data.image && (
+            <Image
+              src={post.data.image}
+              alt={post.data.title}
+              width={1200}
+              height={630}
+              class="mt-6 w-full rounded-lg object-cover"
+            />
+          )
+        }
+      </div>
+      <article class="prose max-w-none">
+        <Content />
+      </article>
+      <PostNavigation
+        newerPost={navigation.newer}
+        olderPost={navigation.older}
+        parentPost={isCurrentSubpost ? navigation.parent : undefined}
+      />
+    </div>
+    {
+      (hasChildPosts || isCurrentSubpost) && (
+        <SubpostsSidebar
+          parentId={
+            isCurrentSubpost ? getParentId(currentPostId) : currentPostId
+          }
+          className="sticky top-20 self-start w-56"
+        />
+      )
+    }
+  </main>
+
+  <Button
+    variant="outline"
+    size="icon"
+    className="group fixed right-8 bottom-8 z-50 hidden"
+    id="scroll-to-top"
+    title="Scroll to top"
+    aria-label="Scroll to top"
+  >
+    <Icon
+      name="lucide:arrow-up"
+      class="mx-auto size-4 transition-all group-hover:-translate-y-0.5"
+    />
+  </Button>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      const scrollToTopButton = document.getElementById('scroll-to-top')
+      const footer = document.querySelector('footer')
+
+      if (scrollToTopButton && footer) {
+        scrollToTopButton.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+
+        window.addEventListener('scroll', () => {
+          const footerRect = footer.getBoundingClientRect()
+          const isFooterVisible = footerRect.top <= window.innerHeight
+
+          scrollToTopButton.classList.toggle(
+            'hidden',
+            window.scrollY <= 300 || isFooterVisible,
+          )
+        })
+      }
+    })
+  </script>
+</Layout>

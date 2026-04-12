@@ -1,0 +1,54 @@
+---
+import Aside from '@/components/AsideNavigation.astro'
+import BlogCard from '@/components/BlogCard.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getPostsByTag, groupPostsByYear } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
+
+export async function getStaticPaths() {
+  return ['philosophy', 'coding', 'ai', 'art', 'math'].map((category) => ({
+    params: { category },
+  }))
+}
+
+const { category } = Astro.params
+const posts = await getPostsByTag(category)
+const postsByYear = groupPostsByYear(posts)
+const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
+---
+
+<Layout class="relative max-w-7xl px-0 pt-16">
+  <PageHead slot="head" title={category} />
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
+    <div class="space-y-12">
+      <div class="flex flex-col">
+        <h1 class="text-lg capitalize">{category}</h1>
+      </div>
+      {
+        posts.length > 0 ? (
+          years.map((year) => (
+            <section class="flex flex-col gap-y-4">
+              <h2 class="text-muted-foreground text-sm font-medium">{year}</h2>
+              <ul class="flex flex-col">
+                {postsByYear[year].map((post) => (
+                  <li>
+                    <BlogCard entry={post} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        ) : (
+          <div class="text-muted-foreground flex flex-col items-start gap-2">
+            <p class="text-md">:/</p>
+            <p class="text-sm">No writing in this category yet.</p>
+          </div>
+        )
+      }
+    </div>
+  </main>
+</Layout>
