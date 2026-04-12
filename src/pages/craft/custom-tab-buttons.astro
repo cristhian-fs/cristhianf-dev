@@ -20,6 +20,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
 <script>
   function setup() {
     const tabBtns = Array.from(document.querySelectorAll('[data-tab-btn]'))
+    const isMobile = () => window.matchMedia('(max-width: 768px)').matches
     const tabsWrapper = document.querySelector(
       '.tab-btns-wrapper',
     ) as HTMLDivElement
@@ -74,13 +75,23 @@ import CraftLayout from '@/layouts/craft-layout.astro'
 
     function determineBorderRadius(index: number, totalBtns: number): string {
       if (index === 0) {
-        return '32px 4px 4px 32px'
+        return isMobile() ? '28px 28px 4px 4px' : '28px 4px 4px 28px'
       }
       if (index === totalBtns - 1) {
-        return '4px 32px 32px 4px'
+        return isMobile() ? '4px 4px 28px 28px' : '4px 28px 28px 4px'
       }
       return '32px'
     }
+
+    window.addEventListener('resize', () => {
+      animatePseudoElement({
+        target: tabsWrapper,
+        targetCoords: tabsWrapper.getBoundingClientRect(),
+        coords: activeBtn.getBoundingClientRect(),
+        index: tabBtns.indexOf(activeBtn),
+        totalBtns: tabBtns.length,
+      })
+    })
   }
 
   document.addEventListener('astro:page-load', setup)
@@ -120,6 +131,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
 
   .tab-btns-wrapper {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
     font-size: 1rem;
     line-height: 1.75rem;
@@ -154,5 +166,11 @@ import CraftLayout from '@/layouts/craft-layout.astro'
   }
   [data-tab-btn].active {
     color: var(--color-foreground);
+  }
+
+  @media screen and (min-width: 768px) {
+    .tab-btns-wrapper {
+      flex-direction: row;
+    }
   }
 </style>

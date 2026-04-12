@@ -60,9 +60,16 @@ const asideNavigation = [
   }
 </style>
 
-<aside class={cn('max-w-3xs md:sticky md:top-8 aside-navigation', className)}>
-  <div class="flex items-center justify-between">
-    <h3 class="text-lg leading-none font-medium">Cristhian F.</h3>
+<aside
+  class={cn(
+    'md:max-w-3xs md:sticky md:top-8 aside-navigation w-full',
+    className,
+  )}
+>
+  <div class="flex w-full items-center justify-between">
+    <Link href='/'>
+      <h3 class="text-lg leading-none font-medium">Cristhian F.</h3>
+    </Link>
     <button
       id="aside-toggle"
       class="text-muted-foreground hover:text-foreground transition-colors md:hidden"
