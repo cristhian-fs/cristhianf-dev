@@ -1,5 +1,5 @@
 ---
-import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Aside from '@/components/AsideNavigation.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
 import { badgeVariants } from '@/components/ui/badge'
@@ -10,11 +10,12 @@ import { Icon } from 'astro-icon/components'
 const sortedTags = await getSortedTags()
 ---
 
-<Layout class="max-w-2xl">
+<Layout class="relative max-w-7xl px-0 pt-16">
   <PageHead slot="head" title="Tags" />
-  <Breadcrumbs items={[{ label: 'Tags', icon: 'lucide:tags' }]} />
-
-  <div class="flex flex-col gap-4">
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
     <div class="flex flex-wrap gap-2">
       {
         sortedTags.map(({ tag, count }) => (
@@ -29,5 +30,5 @@ const sortedTags = await getSortedTags()
         ))
       }
     </div>
-  </div>
+  </main>
 </Layout>

@@ -1,6 +1,5 @@
 ---
-import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Line from '@/components/line.astro'
+import Aside from '@/components/AsideNavigation.astro'
 import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
@@ -11,59 +10,43 @@ const completedProjects = projects.filter((project) => project.data.isCompleted)
 const uncompletedProjects = projects.filter((project) => !project.data.isCompleted)
 ---
 
-<Layout class="max-w-2xl pt-16 relative">
-  <Line 
-    direction="vertical"
-    class='fixed top-0 right-4 md:right-[calc(50%-42rem/2)]'
-  />
-  <Line 
-    direction="vertical"
-    class='fixed top-0 left-4 md:left-[calc(50%-42rem/2)]'
-  />
-  <PageHead slot="head" title="About" />
-  <div class="px-8 md:px-4">
-    <Breadcrumbs items={[{ label: 'Projects', icon: 'lucide:info' }]} />
-  </div>
-  
-  <section>
-    <div class="min-w-full">
-      <div class="prose mb-8 px-8 md:px-4">
-        <p class="mb-4 text-pretty">
-          Here are some of the projects I've worked on. (-_-)
-        </p>
-      </div>
-      {uncompletedProjects.length > 0 && (
-        <div class="relative px-8 py-4 md:px-4">
-          <Line 
-            direction="horizontal"
-            class="absolute top-0 left-1/2"
-          />
-          <h2 class="text-muted-foreground">In progress</h2>
-          <Line 
-            direction="horizontal"
-            class="absolute bottom-0 left-1/2"
-          />
-        </div>
-        <div class="flex flex-col mb-8 px-4 md:px-0">
-          {uncompletedProjects.map((project) => <ProjectCard project={project} />)}
-        </div>
-      )}
-      {completedProjects.length > 0 && (
-        <div class="relative px-8 py-4 md:px-4">
-          <Line 
-            direction="horizontal"
-            class="absolute top-0 left-1/2"
-          />
-          <h2 class="text-muted-foreground">Completed</h2>
-          <Line 
-            direction="horizontal"
-            class="absolute bottom-0 left-1/2"
-          />
-        </div>
-        <div class="flex flex-col px-4 md:px-0">
-          {completedProjects.map((project) => <ProjectCard project={project} />)}
-        </div>
-      )}
+<Layout class="relative max-w-7xl px-0 pt-16">
+  <PageHead slot="head" title="Projects" />
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
+    <div class="space-y-12">
+      {
+        uncompletedProjects.length > 0 && (
+          <section class="flex flex-col gap-y-4">
+            <h2 class="text-muted-foreground text-sm font-medium">
+              In progress
+            </h2>
+            <ul class="flex flex-col gap-4">
+              {uncompletedProjects.map((project) => (
+                <li>
+                  <ProjectCard project={project} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        completedProjects.length > 0 && (
+          <section class="flex flex-col gap-y-4">
+            <h2 class="text-muted-foreground text-sm font-medium">Completed</h2>
+            <ul class="flex flex-col gap-4">
+              {completedProjects.map((project) => (
+                <li>
+                  <ProjectCard project={project} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
     </div>
-  </section>
+  </main>
 </Layout>

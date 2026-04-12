@@ -1,18 +1,19 @@
 ---
+import Aside from '@/components/AsideNavigation.astro'
 import BlogCard from '@/components/BlogCard.astro'
 import CraftCard from '@/components/CraftCard.astro'
-import Line from '@/components/line.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
-import ThemeToggle from '@/components/ThemeToggle.astro'
 import { Badge } from '@/components/ui/badge'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { SITE, TECHSTACK } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getAllProjects, getRecentCrafts, getRecentPosts, getRecentProjects } from '@/lib/data-utils'
-import { cn } from '@/lib/utils'
+import {
+  getAllProjects,
+  getRecentCrafts,
+  getRecentPosts,
+  getRecentProjects,
+} from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 
 const allProjects = await getAllProjects()
@@ -21,174 +22,99 @@ const crafts = await getRecentCrafts(SITE.featuredCraftCount)
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
 
-<Layout class="max-w-2xl pt-16 relative px-0">
+<Layout class="relative max-w-7xl px-4 pt-16">
   <PageHead slot="head" title="Home" />
-  <Line 
-    direction="vertical"
-    class='fixed top-0 right-4 md:right-[calc(50%-42rem/2)]'
-  />
-  <Line 
-    direction="vertical"
-    class='fixed top-0 left-4 md:left-[calc(50%-42rem/2)]'
-  />
-  <section>
-    <div
-      class="flex flex-col gap-2 sm:gap-4 relative py-10 px-8 md:px-4"
-    >
-      <Line 
-        direction="horizontal"
-        class="absolute top-0 left-1/2"
-      />
-      <div class="flex flex-col">
-        <h3 class="text-lg leading-none font-medium">Cristhian</h3>
-        <p class="text-muted-foreground text-sm">
-          Front-end developer
-        </p>
-      </div>
-      <p class="text-muted-foreground text-sm text-balance">
-        I'm currently focused on building solid, accessible, and maintainable
-        interfaces. I have the most experience with React, TypeScript, and the
-        modern web stack, but I'm always up for learning whatever's needed to
-        solve things properly.
-      </p>
-      <div class="mt-2 flex items-center gap-x-4">
-        <Button variant="link" disabled className='has-[>svg]:px-0'>
-          <Icon name="lucide:file-text" class="size-4" />
-          Resume
-        </Button>
-        <Link
-          href="https://github.com/cristhian-fs"
-          class={cn(buttonVariants({ variant: 'link', size: 'sm' }), 'has-[>svg]:px-0')}
-          external
-        >
-          <Icon name="lucide:github" class="size-4" />
-          <span class="">Github</span>
-        </Link>
-        <Link
-          href="mailto:contato@cristhianf.dev"
-          class={cn(buttonVariants({ variant: 'link', size: 'sm' }), 'has-[>svg]:px-0')}
-          external
-        >
-          <Icon name="lucide:mail" class="size-4" />
-          <span class="">Mail</span>
-        </Link>
-        <Link
-          href="https://linkedin.com/in/cristhian-fs"
-          class={cn(buttonVariants({ variant: 'link', size: 'sm' }), 'has-[>svg]:px-0')}
-          external
-        >
-          <Icon name="lucide:linkedin" class="size-4" />
-          <span class="">Linkedin</span>
-        </Link>
-      </div>
-      <Line 
-        direction="horizontal"
-        class="absolute bottom-0 left-1/2"
-      />
+  <main
+    class="relative grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside className="sticky top-8"/>
+    <div class="space-y-20">
+      <section>
+        <div class="relative flex flex-col">
+          <p class="text-muted-foreground text-sm text-balance font-mono">
+            /front-end
+          </p>
+          <p class="text-foreground text-balance">
+            I build interfaces that get out of the way.
+          </p>
+          <div class="grid grid-cols-3 gap-4 mt-8">
+            <div class="flex flex-col gap-1">
+              <span class="text-muted-foreground text-xs font-mono">/about</span>
+              <Link href="/about" class="text-sm hover:underline">Who, what, why</Link>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-muted-foreground text-xs font-mono">/now</span>
+              <Link href="/now" class="text-sm hover:underline">What I'm up to</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="flex flex-col gap-2">
+          <h3 class="text-muted-foreground text-sm text-balance font-mono">/stack</h3>
+          <div class="flex max-w-lg flex-wrap items-center justify-start gap-2">
+            {
+              TECHSTACK.map((tech) =>
+                tech.href ? (
+                  <Link href={tech.href} external>
+                    <Badge variant="outline">
+                      <Icon name={tech.icon} class="size-4" />
+                      {tech.name}
+                    </Badge>
+                  </Link>
+                ) : (
+                  <Badge variant="outline">
+                    <Icon name={tech.icon} class="size-4" />
+                    {tech.name}
+                  </Badge>
+                ),
+              )
+            }
+          </div>
+      </section>
+      <section class="flex flex-col gap-2">
+          <Link href="/projects">
+            <h2 class="text-muted-foreground text-sm font-medium font-mono">
+              /projects ({allProjects.length})
+            </h2>
+          </Link>
+        <ul class="flex flex-col gap-4">
+          {
+            projects.map((project) => (
+              <li>
+                <ProjectCard project={project} />
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section class="flex flex-col gap-2">
+          <Link href="/craft">
+            <h2 class="text-muted-foreground text-sm font-medium font-mono">/craft</h2>
+          </Link>
+        <ul class="grid grid-cols-1 gap-4">
+          {
+            crafts.map((craft) => (
+              <li>
+                <CraftCard entry={craft} />
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section class="flex flex-col gap-2">
+          <Link href="/writing">
+            <h2 class="text-muted-foreground text-sm font-medium font-mono">/writing</h2>
+          </Link>
+        <ul class="flex flex-col gap-2">
+          {
+            blog.map((post) => (
+              <li>
+                <BlogCard entry={post} />
+              </li>
+            ))
+          }
+        </ul>
+      </section>
     </div>
-    <div class="flex flex-col gap-y-2.5 mt-16 relative">
-      <div class="relative px-8 p-4 md:p-4 md:px-4">
-        <Line 
-          direction="horizontal"
-          class="absolute top-0 left-1/2"
-        />
-        <h3 class="font-medium text-muted-foreground text-sm">Stack</h3>
-        <Line 
-          direction="horizontal"
-          class="absolute bottom-0 left-1/2"
-        />
-      </div>
-      <div class="flex flex-wrap items-center justify-start gap-2 max-w-lg px-8 py-4 md:p-4">
-        {
-          TECHSTACK.map((tech) =>
-            tech.href ? (
-              <Link href={tech.href} external>
-                <Badge variant="outline">
-                  <Icon name={tech.icon} class="size-4" />
-                  {tech.name}
-                </Badge>
-              </Link>
-            ) : (
-              <Badge variant="outline">
-                <Icon name={tech.icon} class="size-4" />
-                {tech.name}
-              </Badge>
-            ),
-          )
-        }
-      </div>
-    </div>
-  </section>
-  <section class="mt-16 flex flex-col">
-    <div class="relative px-8 p-4 md:p-4 md:px-4">
-      <Line 
-          direction="horizontal"
-          class="absolute top-0 left-1/2"
-        />
-        <Link href="/projects">
-          <h2 class="font-medium text-muted-foreground text-sm">Projects ({allProjects.length})</h2>
-        </Link>
-        <Line 
-          direction="horizontal"
-          class="absolute bottom-0 left-1/2"
-        />
-    </div>
-    <ul class="flex flex-col px-4 md:px-0">
-      {
-        projects.map((project) => (
-          <li>
-            <ProjectCard project={project} />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-  <section class="mt-16 flex flex-col">
-    <div class="relative px-8 p-4 md:p-4 md:px-4">
-      <Line 
-          direction="horizontal"
-          class="absolute top-0 left-1/2"
-        />
-        <Link href="/craft">
-          <h2 class="font-medium text-muted-foreground text-sm">Craft</h2>
-        </Link>
-        <Line 
-          direction="horizontal"
-          class="absolute bottom-0 left-1/2"
-        />
-    </div>
-    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 px-8 md:px-4">
-      {
-        crafts.map((craft) => (
-          <li>
-            <CraftCard entry={craft} />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-  <section class="mt-16 flex flex-col">
-    <div class="relative px-8 p-4 md:p-4 md:px-4">
-      <Line 
-        direction="horizontal"
-        class="absolute top-0 left-1/2"
-      />
-      <Link href="/blog">
-        <h2 class="font-medium text-muted-foreground text-sm">Blog</h2>
-      </Link>
-      <Line 
-        direction="horizontal"
-        class="absolute bottom-0 left-1/2"
-      />
-    </div>
-    <ul class="flex flex-col px-4 md:px-0">
-      {
-        blog.map((post) => (
-          <li>
-            <BlogCard entry={post} />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+  </main>
 </Layout>

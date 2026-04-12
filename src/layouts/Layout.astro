@@ -1,11 +1,13 @@
 ---
+import '@/styles/code-block.css'
+import '@/styles/eases.css'
 import '@/styles/global.css'
 import '@/styles/typography.css'
-import '@/styles/code-block.css'
 
 import Footer from '@/components/Footer.astro'
 import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
+import ZenModeFloatting from '@/components/ZenModeFloatting.astro'
 import { SITE } from '@/consts'
 import { cn } from '@/lib/utils'
 
@@ -30,11 +32,12 @@ const { class: className } = Astro.props
         <slot name="subposts-navigation" />
         <slot name="table-of-contents" />
       </div>
-      <main class="grow has-[.line[data-direction='horizontal']]:overflow-x-hidden">
+      <main class="grow">
         <div class={cn('mx-auto flex grow flex-col', className)}>
           <slot />
         </div>
       </main>
+      <ZenModeFloatting />
       <Footer />
     </div>
   </body>

@@ -1,57 +1,39 @@
 ---
-import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Aside from '@/components/AsideNavigation.astro'
 import CraftCard from '@/components/CraftCard.astro'
-import Line from '@/components/line.astro'
 import PageHead from '@/components/PageHead.astro'
-import PaginationComponent from '@/components/ui/pagination'
 import Layout from '@/layouts/Layout.astro'
-import { getAllCrafts, groupCraftByYear } from '@/lib/data-utils'
+import { getAllCrafts } from '@/lib/data-utils'
 
-const crafts = await getAllCrafts()
-const craftsByYear = groupCraftByYear(crafts)
-const years = Object.keys(craftsByYear).sort((a, b) => parseInt(b) - parseInt(a))
+const entries = await getAllCrafts()
 ---
 
-<Layout class="max-w-2xl pt-16">
-  <PageHead slot="head" title="Craft" />
-  <Line 
-    direction="vertical"
-    class='fixed top-0 right-4 md:right-[calc(50%-42rem/2)]'
-  />
-  <Line 
-    direction="vertical"
-    class='fixed top-0 left-4 md:left-[calc(50%-42rem/2)]'
-  />
-  <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-6 px-8 md:px-4">
-    <Breadcrumbs
-      items={[
-        { label: 'Craft', href: '/craft', icon: 'lucide:archive' },
-      ]}
-    />
-    {
-      years.map((year) => (
-        <section class="flex flex-col gap-y-4 mb-16">
-          <div class="relative py-4 md:p-4">
-            <Line 
-              direction="horizontal"
-              class="absolute top-0 left-1/2"
-            />
-              <div class="font-medium">{year}</div>
-            <Line 
-              direction="horizontal"
-              class="absolute bottom-0 left-1/2"
-            />
-          </div>
-          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {craftsByYear[year].map((craft) => (
-              <li>
-                <CraftCard entry={craft} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))
-    }
-  </div>
-
+<Layout class="relative max-w-7xl px-0 pt-16">
+  <PageHead slot="head" title="Craft" description="Web animations & experiments" />
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
+    <div class="space-y-12">
+      <div class="flex flex-col">
+        <h1 class="text-lg">Craft</h1>
+        <p class="text-md text-muted-foreground">Web animations & experiments</p>
+      </div>
+      {
+        entries.length > 0 ? (
+          <section class="flex flex-col gap-y-4">
+            <ul class="flex flex-col gap-y-4">
+              {entries.map((entry) => (
+                <li>
+                  <CraftCard entry={entry} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <p class="text-muted-foreground text-sm">No craft entries yet.</p>
+        )
+      }
+    </div>
+  </main>
 </Layout>
