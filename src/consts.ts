@@ -2,8 +2,7 @@ import type { IconMap, SocialLink, Site, Tech } from '@/types'
 
 export const SITE: Site = {
   title: 'Cristhian F.',
-  description:
-    'Front-end developer based in Brazil.',
+  description: 'Front-end developer based in Brazil.',
   href: 'https://cristhianf.dev',
   author: 'cristhian-fs',
   locale: 'pt-BR',
@@ -14,8 +13,8 @@ export const SITE: Site = {
 
 export const NAV_LINKS: SocialLink[] = [
   {
-    href: '/blog',
-    label: 'blog',
+    href: '/writing',
+    label: 'writing',
   },
   {
     href: '/projects',
@@ -96,11 +95,11 @@ export const TECHSTACK: Tech[] = [
     href: 'https://firebase.google.com/',
     icon: 'firebase',
   },
-  // {
-  //   name: 'Hono',
-  //   href: 'https://hono.dev/',
-  //   icon: 'hono',
-  // },
+  {
+    name: 'Hono',
+    href: 'https://hono.dev/',
+    icon: 'hono',
+  },
   {
     name: 'Javascript',
     icon: 'javascript',
@@ -108,5 +107,17 @@ export const TECHSTACK: Tech[] = [
   {
     name: 'Typescript',
     icon: 'typescript',
+  },
+  {
+    name: 'neovim',
+    icon: 'neovim',
+  },
+  {
+    name: 'Shell script',
+    icon: 'bash',
+  },
+  {
+    name: 'Docker',
+    icon: 'docker',
   },
 ]

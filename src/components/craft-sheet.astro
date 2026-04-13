@@ -1,0 +1,116 @@
+---
+interface Props {
+  title?: string
+}
+
+const { title } = Astro.props
+---
+
+<button
+  id="craft-sheet-trigger"
+  aria-label="Open notes"
+  class="bg-primary text-primary-foreground fixed right-6 bottom-6 z-40 flex h-9 items-center gap-2 rounded-full px-4 text-sm font-medium shadow-lg transition-opacity hover:opacity-90"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+  </svg>
+  Notes
+</button>
+
+<div
+  id="craft-sheet-overlay"
+  class="pointer-events-none fixed inset-0 z-40 bg-black/20 opacity-0 transition-opacity duration-300"
+>
+</div>
+
+<aside
+  id="craft-sheet"
+  class="border border-border bg-background fixed inset-y-8 right-8 z-50 flex w-full max-w-[calc(100%-4rem)] md:max-w-md translate-x-[calc(100%+2rem)] flex-col rounded-2xl shadow-xl transition-transform duration-300"
+  aria-hidden="true"
+>
+  <div
+    class="border-border flex items-center justify-between border-b px-6 py-4"
+  >
+    {
+      title ? (
+        <h2 class="text-sm font-medium">{title}</h2>
+      ) : (
+        <span class="text-muted-foreground text-sm font-medium">Notes</span>
+      )
+    }
+    <button
+      id="craft-sheet-close"
+      aria-label="Close notes"
+      class="text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto px-6 py-4">
+    <div class="prose max-w-none">
+      <slot />
+    </div>
+  </div>
+</aside>
+
+<script>
+  function setupCraftSheet() {
+    const trigger = document.getElementById('craft-sheet-trigger')
+    const closeBtn = document.getElementById('craft-sheet-close')
+    const overlay = document.getElementById('craft-sheet-overlay')
+    const sheet = document.getElementById('craft-sheet')
+
+    function openSheet() {
+      sheet?.classList.remove('translate-x-[calc(100%+2rem)]')
+      sheet?.setAttribute('aria-hidden', 'false')
+      overlay?.classList.remove('pointer-events-none', 'opacity-0')
+      overlay?.classList.add('pointer-events-auto', 'opacity-100')
+      document.body.style.overflow = 'hidden'
+    }
+
+    function closeSheet() {
+      sheet?.classList.add('translate-x-[calc(100%+2rem)]')
+      sheet?.setAttribute('aria-hidden', 'true')
+      overlay?.classList.add('pointer-events-none', 'opacity-0')
+      overlay?.classList.remove('pointer-events-auto', 'opacity-100')
+      document.body.style.overflow = ''
+    }
+
+    trigger?.addEventListener('click', openSheet)
+    closeBtn?.addEventListener('click', closeSheet)
+    overlay?.addEventListener('click', closeSheet)
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSheet()
+    })
+  }
+
+  document.addEventListener('astro:page-load', setupCraftSheet)
+</script>

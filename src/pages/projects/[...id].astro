@@ -1,137 +1,107 @@
 ---
+import Aside from '@/components/AsideNavigation.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import ProjectHead from '@/components/projects/ProjectHead.astro'
+import ProjectNavigation from '@/components/projects/ProjectNavigation.astro'
+import TOCHeader from '@/components/TOCHeader.astro'
+import { badgeVariants } from '@/components/ui/badge'
+import { Button, buttonVariants } from '@/components/ui/button'
+import Layout from '@/layouts/Layout.astro'
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import ProjectHead from '@/components/projects/ProjectHead.astro';
-import PostNavigation from '@/components/PostNavigation.astro';
-import { badgeVariants } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
-import Layout from '@/layouts/Layout.astro';
-import { getAllProjects, getAdjacentProjects, getProjectTOCSections } from '@/lib/data-utils';
-import { cn, formatDate } from '@/lib/utils';
-import { Icon } from 'astro-icon/components';
-import Image from 'astro/components/Image.astro';
-import { render } from 'astro:content';
-import TOCHeader from '@/components/TOCHeader.astro';
-import ProjectTocSidebar from '@/components/projects/project-toc-sidebar.astro';
-import ProjectNavigation from '@/components/projects/ProjectNavigation.astro';
-import Link from '@/components/Link.astro';
+  getAdjacentProjects,
+  getAllProjects,
+} from '@/lib/data-utils'
+import { cn, formatDate } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import { render } from 'astro:content'
 
-export async function getStaticPaths(){
-  const project = await getAllProjects()
-  return project.map((project) => ({
+export async function getStaticPaths() {
+  const projects = await getAllProjects()
+  return projects.map((project) => ({
     params: { id: project.id },
     props: { project },
   }))
 }
 
-const { project } = Astro.props;
-const currentProjectId = Astro.params.id;
-const { Content, headings } = await render(project);
+const { project } = Astro.props
+const currentProjectId = Astro.params.id
+const { Content, headings } = await render(project)
 
-const navigation = await getAdjacentProjects(currentProjectId);
-const tocSections = await getProjectTOCSections(currentProjectId)
+const navigation = await getAdjacentProjects(currentProjectId)
 ---
 
-<Layout class="pt-10 px-4">
+<Layout class="relative max-w-7xl px-4 pt-16">
   <ProjectHead slot="head" project={project} />
   {
-    headings?.length > 0 && <TOCHeader slot="table-of-contents" headings={headings} />
+    headings?.length > 0 && (
+      <TOCHeader slot="table-of-contents" headings={headings} />
+    )
   }
-  <section
-    class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)]"
-  >
-    <div class="col-start-2">
-      <Breadcrumb>
-        <BreadcrumbList className='justify-center'>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/projects">
-              Projects
-            </BreadcrumbLink>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbLink href={`/projects/${project.data.link}`}>
-              {project.data.name}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <h1
-        class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl xl:text-5xl text-center mt-2"
-        id="post-title"
-      >
-        {project.data.name}
-      </h1>
-    </div>
-    {
-      project.data.image && (
-        <Image
-          src={project.data.image}
-          alt={project.data.name}
-          width={1200}
-          height={630}
-          class="col-start-2 mx-auto w-full max-w-5xl object-cover rounded-md my-12 border shadow-lg"
-        />
-      )
-    }
 
-    <section class="col-start-2 flex flex-col gap-y-6 text-center mb-40">
-      <div class="flex flex-col">
-        <div
-          class="text-muted-foreground divide-border mb-4 flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
+    <div class="space-y-10">
+      <div class="flex flex-col gap-y-3">
+        <Breadcrumbs 
+          items={[
+          { label: 'Projects', href: '/projects', },
+          { label: project.data.name, },
+        ]} />
+        <h1
+          class="scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl"
+          id="post-title"
         >
-          <div
-            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
-          >
-            <span>{formatDate(project.data.startDate || new Date())} - {project.data.endDate ? formatDate(project.data.endDate) : 'Present'}</span>
-          </div>
+          {project.data.name}
+        </h1>
+        <div class="text-muted-foreground flex flex-wrap items-center gap-x-3 text-sm">
+          <span>
+            {formatDate(project.data.startDate)} –{' '}
+            {project.data.endDate ? formatDate(project.data.endDate) : 'Present'}
+          </span>
         </div>
-        <div class="flex flex-wrap justify-center gap-2">
+        <div class="flex flex-wrap gap-2">
           {
-            project.data.tags &&
-              project.data.tags.length > 0 &&
-              project.data.tags.map((tag) => (
-                <a
-                  href={`/tags/${tag}`}
-                  class={badgeVariants({ variant: 'secondary' })}
-                >
-                  <Icon name="lucide:hash" class="size-3" />
-                  {tag}
-                </a>
-              ))
+            project.data.tags.map((tag) => (
+              <a href={`/tags/${tag}`} class={badgeVariants({ variant: 'secondary' })}>
+                <Icon name="lucide:hash" class="size-3" />
+                {tag}
+              </a>
+            ))
           }
         </div>
+        {
+          project.data.link.startsWith('http') && (
+            <Link
+              href={project.data.link}
+              external
+              class={cn(buttonVariants({ variant: 'default' }), 'w-fit')}
+            >
+              Visit live site
+            </Link>
+          )
+        }
       </div>
-      {project.data.link.startsWith('http') && (
-        <Link
-          href={project.data.link}
-          external
-          class={cn(buttonVariants({ variant: "default" }), 'w-auto self-center')}
-        >
-          Visit live site
-        </Link>
-      )}
-    </section>
-
-    <!-- {
-      tocSections.length > 0 && (
-        <ProjectTocSidebar headings={tocSections} />
-      )
-    } -->
-
-    <article class="prose col-start-2 max-w-none mb-10">
-      <Content />
-    </article>
-
-    <ProjectNavigation
-      nextPost={navigation.newer}
-      prevPost={navigation.older}
-    />
-  </section>
+      {
+        project.data.image && (
+          <Image
+            src={project.data.image}
+            alt={project.data.name}
+            width={1200}
+            height={630}
+            class="w-full rounded-lg object-cover"
+          />
+        )
+      }
+      <article class="prose max-w-none">
+        <Content />
+      </article>
+      <ProjectNavigation nextPost={navigation.newer} prevPost={navigation.older} />
+    </div>
+  </main>
 
   <Button
     variant="outline"

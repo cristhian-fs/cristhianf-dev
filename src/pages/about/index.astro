@@ -1,0 +1,56 @@
+---
+import Aside from '@/components/AsideNavigation.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+---
+
+<Layout class="relative max-w-7xl px-4 pt-16">
+  <PageHead slot="head" title="About" />
+  <main
+    class="relative grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
+    <div class="space-y-20">
+      <section class="flex flex-col gap-6">
+        <p class="text-muted-foreground text-sm font-mono">/about</p>
+        <div class="flex flex-col gap-4">
+          <p class="text-foreground text-balance">
+            I'm Cristhian, a front-end developer based in Brazil. I care about
+            the craft — interfaces that feel right, code that reads well, and
+            details that most people won't notice but everyone will feel.
+          </p>
+          <p class="text-muted-foreground text-sm text-balance">
+            I've spent most of my time working with React and TypeScript, but I
+            pick up whatever the problem needs. Right now I'm deep into Astro
+            and thinking a lot about performance and design systems.
+          </p>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-4">
+        <p class="text-muted-foreground text-sm font-mono">/values</p>
+        <ul class="text-muted-foreground flex flex-col gap-2 text-sm">
+          <li>Simplicity over cleverness.</li>
+          <li>Ship it, then make it better.</li>
+          <li>Good defaults. Sensible exceptions.</li>
+          <li>The boring solution is usually the right one.</li>
+        </ul>
+      </section>
+
+      <section class="flex flex-col gap-4">
+        <p class="text-muted-foreground text-sm font-mono">/contact</p>
+        <p class="text-muted-foreground text-sm">
+          Reach me at <a
+            href="mailto:contato@cristhianf.dev"
+            class="text-foreground hover:underline">contato@cristhianf.dev</a
+          > or on <a
+            href="https://github.com/cristhian-fs"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-foreground hover:underline">GitHub</a
+          >.
+        </p>
+      </section>
+    </div>
+  </main>
+</Layout>

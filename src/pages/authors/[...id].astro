@@ -1,8 +1,7 @@
 ---
+import Aside from '@/components/AsideNavigation.astro'
 import AuthorCard from '@/components/AuthorCard.astro'
 import BlogCard from '@/components/BlogCard.astro'
-import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Line from '@/components/line.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllAuthors, getPostsByAuthor } from '@/lib/data-utils'
@@ -19,58 +18,40 @@ const { author } = Astro.props
 const authorPosts = await getPostsByAuthor(author.id)
 ---
 
-<Layout class="max-w-2xl pt-10">
+<Layout class="relative max-w-7xl px-4 pt-16">
   <PageHead
     slot="head"
     title={`${author.data.name} (Author)`}
     description={author.data.bio || `Profile of ${author.data.name}.`}
   />
-  
-  <Line 
-    direction="vertical"
-    class='fixed top-0 right-4 md:right-[calc(50%-42rem/2)]'
-  />
-  <Line
-    direction="vertical"
-    class='fixed top-0 left-4 md:left-[calc(50%-42rem/2)]'
-  />
-  <section class="relative px-8 md:px-4 space-y-4">
-    <Breadcrumbs
-      items={[
-        { href: '/authors', label: 'Authors', icon: 'lucide:users' },
-        { label: author.data.name, icon: 'lucide:user' },
-      ]}
-    />
-    <AuthorCard author={author} />
-  </section>
-  <section class="flex flex-col mt-10">
-    <div class="relative px-8 p-4 md:p-4 md:px-4">
-      <Line 
-        direction="horizontal"
-        class="absolute top-0 left-1/2"
-      />
-      <h2 class="font-medium text-muted-foreground text-sm">Posts by {author.data.name}</h2>
-      <Line 
-        direction="horizontal"
-        class="absolute bottom-0 left-1/2"
-      />
+  <main
+    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+  >
+    <Aside />
+    <div class="space-y-12">
+      <AuthorCard author={author} />
+      <section class="flex flex-col gap-y-4">
+        <h2 class="text-muted-foreground text-sm font-medium">
+          Posts by {author.data.name}
+        </h2>
+        {
+          authorPosts.length > 0 ? (
+            <ul class="flex flex-col gap-4">
+              {authorPosts
+                .filter((post) => !post.data.draft)
+                .map((post) => (
+                  <li>
+                    <BlogCard entry={post} />
+                  </li>
+                ))}
+            </ul>
+          ) : (
+            <p class="text-muted-foreground">
+              No posts available from this author.
+            </p>
+          )
+        }
+      </section>
     </div>
-    {
-      authorPosts.length > 0 ? (
-        <ul class="flex flex-col gap-4 px-4 md:px-0">
-          {authorPosts
-            .filter((post) => !post.data.draft)
-            .map((post) => (
-              <li>
-                <BlogCard entry={post} />
-              </li>
-            ))}
-        </ul>
-      ) : (
-        <p class="text-muted-foreground">
-          No posts available from this author.
-        </p>
-      )
-    }
-  </section>
+  </main>
 </Layout>

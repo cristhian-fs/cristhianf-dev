@@ -1,0 +1,34 @@
+---
+title: 'Landing page reveal'
+description: 'One GSAP Timeline being used to do all the revealing animation'
+image: './logo.png'
+date: 2026-04-12
+tags: ['gsap', 'animation', 'page loader']
+---
+
+## Concept
+
+This animation explores **organic motion** by layering multiple circles whose radii and positions oscillate using sine waves at different phases and frequencies.
+
+Each circle's radius is driven by:
+
+```
+r(t) = maxRadius × (0.3 + 0.7 × ((sin(t + phase) + 1) / 2))
+```
+
+The `phase` offset per circle creates the staggered "breathing" effect rather than all circles pulsing in unison.
+
+## Position
+
+Circle centers drift slowly using Lissajous-like motion:
+
+```
+x = centerX + cos(t × 0.5 + phase) × drift
+y = centerY + sin(t × 0.7 + phase) × drift
+```
+
+Using different multipliers (`0.5` vs `0.7`) on the time parameter means horizontal and vertical movement are incommensurate — the path never exactly repeats.
+
+## Rendering
+
+Circles are stroked (not filled) at low opacity (`0.15`) so overlapping regions naturally compound, producing areas of higher perceived density without any explicit blending logic.

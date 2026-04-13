@@ -43,6 +43,23 @@ import Favicons from './Favicons.astro'
     href={new URL('rss.xml', Astro.site)}
   />
 
+  <script is:inline>
+    function restorePreferences() {
+      if (localStorage.getItem('crisfsdev-zen') === 'true') {
+        document.documentElement.classList.add('zen-mode')
+      } else {
+        document.documentElement.classList.remove('zen-mode')
+      }
+      if (localStorage.getItem('crisfsdev-large-text') === 'true') {
+        document.documentElement.classList.add('large-text')
+      } else {
+        document.documentElement.classList.remove('large-text')
+      }
+    }
+    restorePreferences()
+    document.addEventListener('astro:after-swap', restorePreferences)
+  </script>
+
   <Favicons />
   <ClientRouter />
 

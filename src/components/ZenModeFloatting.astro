@@ -1,0 +1,27 @@
+---
+import ThemeToggle from './ThemeToggle.astro'
+import ZenMode from './ZenMode.astro'
+---
+
+<style is:global>
+  .zen-mode-floatting {
+    transition: 0.2s var(--power3-in-out);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(40px);
+    filter: blur(8px);
+  }
+
+  html.zen-mode .zen-mode-floatting {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0px);
+    filter: blur(0px);
+  }
+</style>
+<div
+  class="zen-mode-floatting bg-background fixed bottom-8 left-8 z-50 flex w-auto items-center gap-3 rounded-sm border p-1"
+>
+  <ThemeToggle />
+  <ZenMode />
+</div>

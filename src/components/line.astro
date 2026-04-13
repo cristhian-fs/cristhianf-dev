@@ -1,6 +1,6 @@
 ---
-import { cn } from "@/lib/utils"
-import type { HTMLAttributes } from "astro/types"
+import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from 'astro/types'
 
 interface Props extends HTMLAttributes<'div'> {
   direction: 'horizontal' | 'vertical'
@@ -9,31 +9,44 @@ interface Props extends HTMLAttributes<'div'> {
 const { direction, class: className, ...props } = Astro.props
 ---
 
-<div 
+<div
   aria-hidden
-  class={cn("line", className)}
+  class={cn('line', className)}
   data-direction={direction}
   {...props}
-/>
+>
+</div>
 
 <style is:global>
-.line {
-  z-index: 2;
+  .line {
+    z-index: 2;
 
-  &[data-direction="horizontal"] {
-    height: 1px;
-    width: 100vw;
-    background: linear-gradient(90deg, var(--color-border), var(--color-border) 50%, transparent 0, transparent);
-    background-size: 6px 1px;
-    transform: translateX(-50%);
-    left: 50%;
-  }
+    &[data-direction='horizontal'] {
+      height: 1px;
+      width: 100vw;
+      background: linear-gradient(
+        90deg,
+        var(--color-border),
+        var(--color-border) 50%,
+        transparent 0,
+        transparent
+      );
+      background-size: 6px 1px;
+      transform: translateX(-50%);
+      left: 50%;
+    }
 
-  &[data-direction="vertical"] {
-    width: 1px;
-    height: 500vw;
-    background: linear-gradient(180deg, var(--color-border), var(--color-border) 50%, transparent 0, transparent);
-    background-size: 1px 6px;
+    &[data-direction='vertical'] {
+      width: 1px;
+      height: 500vw;
+      background: linear-gradient(
+        180deg,
+        var(--color-border),
+        var(--color-border) 50%,
+        transparent 0,
+        transparent
+      );
+      background-size: 1px 6px;
+    }
   }
-}
 </style>

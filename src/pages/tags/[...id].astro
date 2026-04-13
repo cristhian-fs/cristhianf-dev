@@ -1,6 +1,6 @@
 ---
+import Aside from '@/components/AsideNavigation.astro'
 import BlogCard from '@/components/BlogCard.astro'
-import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
@@ -13,15 +13,11 @@ export async function getStaticPaths() {
 
   return Promise.all(
     uniqueTags.map(async (tag) => {
-      const posts = await getPostsByTag(tag);
-      const projects = await getProjectsByTag(tag);
+      const posts = await getPostsByTag(tag)
+      const projects = await getProjectsByTag(tag)
       return {
         params: { id: tag },
-        props: {
-          tag,
-          posts,
-          projects
-        },
+        props: { tag, posts, projects },
       }
     }),
   )
@@ -30,42 +26,41 @@ export async function getStaticPaths() {
 const { tag, posts, projects } = Astro.props
 ---
 
-<Layout class="max-w-2xl">
+<Layout class="relative max-w-7xl px-4 pt-16">
   <PageHead
     slot="head"
     title={`Posts tagged with "${tag}"`}
     description={`A collection of posts tagged with ${tag}.`}
   />
-  <Breadcrumbs
-    items={[
-      { href: '/tags', label: 'Tags', icon: 'lucide:tags' },
-      { label: tag, icon: 'lucide:tag' },
-    ]}
-  />
-
-  <div class="flex flex-wrap items-center gap-2">
-    <h1 class="text-3xl font-medium">Posts/projects tagged with</h1>
-    <span
-      class="bg-secondary flex items-center gap-x-1 rounded-full px-4 py-2 text-xl font-medium"
-    >
-      <Icon name="lucide:hash" class="size-6 -translate-x-0.5" />{tag}
-    </span>
-  </div>
-
-  <ul class="flex flex-col gap-y-4">
-    {
-      posts.map((post) => (
-        <li>
-          <BlogCard entry={post} />
-        </li>
-      ))
-    }
-    {
-      projects.map((project) => (
-        <li>
-          <ProjectCard project={project} />
-        </li>
-      ))
-    }
-  </ul>
+  <main
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
+  >
+    <Aside />
+    <div class="space-y-8">
+      <div class="flex flex-wrap items-center gap-2">
+        <h1 class="text-muted-foreground text-sm font-medium">Tagged with</h1>
+        <span
+          class="bg-secondary flex items-center gap-x-1 rounded-full px-3 py-1 text-sm font-medium"
+        >
+          <Icon name="lucide:hash" class="size-3" />{tag}
+        </span>
+      </div>
+      <ul class="flex flex-col gap-y-4">
+        {
+          posts.map((post) => (
+            <li>
+              <BlogCard entry={post} />
+            </li>
+          ))
+        }
+        {
+          projects.map((project) => (
+            <li>
+              <ProjectCard project={project} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </main>
 </Layout>
