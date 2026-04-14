@@ -10,6 +10,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { SITE, TECHSTACK } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import {
+getAllCrafts,
   getAllProjects,
   getRecentCrafts,
   getRecentPosts,
@@ -20,6 +21,7 @@ import { Icon } from 'astro-icon/components'
 
 const allProjects = await getAllProjects()
 const projects = await getRecentProjects(SITE.featuredPostCount)
+const { length: craftsLength } = await getAllCrafts()
 const crafts = await getRecentCrafts(SITE.featuredCraftCount)
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
@@ -108,7 +110,7 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
             'w-fit px-0 text-muted-foreground hover:text-foreground',
           )}
         >
-          /craft ({crafts.length})
+          /craft ({craftsLength})
         </Link>
         <ul class="grid grid-cols-1 gap-4">
           {
