@@ -1,34 +1,79 @@
 ---
 title: 'Landing page reveal'
 description: 'One GSAP Timeline being used to do all the revealing animation'
-image: './logo.png'
+image: './banner.png'
 date: 2026-04-12
 tags: ['gsap', 'animation', 'page loader']
 ---
 
-## Concept
+First impressions matter. A lot of sites load and just… show you the content immediately. No ceremony, no buildup. This craft is the opposite of that — it's a full preloader sequence that makes users feel like they're booting into something, and then pays it off with a satisfying reveal.
 
-This animation explores **organic motion** by layering multiple circles whose radii and positions oscillate using sine waves at different phases and frequencies.
+The aesthetic is inspired by sci-fi interfaces: dense monospaced text, progress arcs, cryptic labels. But under the hood it's just layered elements and one well-orchestrated GSAP timeline.
 
-Each circle's radius is driven by:
+## The layers
 
+There are three main layers stacked on top of each other:
+
+1. **Preloader backdrop** — a white panel with scattered metadata text. This is the background that peeks out as the dark preloader lifts away.
+2. **Preloader** — the main dark panel with a centered "Engage" button surrounded by a circular SVG progress ring.
+3. **Hero** — the actual page content, initially scaled down to `0.75` and hidden behind a white mask.
+
+The z-index ordering is what makes the reveal feel dimensional: the hero sits underneath, the preloader covers it, and the backdrop sits behind both.
+
+## The intro sequence
+
+On load, a GSAP timeline runs automatically after a 1-second delay. It uses SplitText to wrap each text line in a clipping mask, then animates the lines up from `translateY(100%)` — a classic typeface reveal:
+
+```js
+preloaderTexts.forEach((p) => {
+  new SplitText(p, { type: 'lines', linesClass: 'line', mask: 'lines' })
+})
+
+introTl.to('.preloader .p-row p .line', {
+  y: '0%',
+  duration: 0.75,
+  ease: 'power3.out',
+  stagger: 0.1,
+})
 ```
-r(t) = maxRadius × (0.3 + 0.7 × ((sin(t + phase) + 1) / 2))
+
+At the same time, the SVG track circle draws itself in — `strokeDashoffset` goes from full to zero, revealing the ring outline. The progress arc follows in stages, pausing at randomized stops to simulate real loading:
+
+```js
+const progressStops = [0.2, 0.25, 0.85, 1].map((base, i) => {
+  return base + (Math.random() - 0.5) * 0.1
+})
 ```
 
-The `phase` offset per circle creates the staggered "breathing" effect rather than all circles pulsing in unison.
+That randomness keeps it from feeling mechanical. Each stop has a slight delay before continuing, mimicking a real async process.
 
-## Position
+## The exit sequence
 
-Circle centers drift slowly using Lissajous-like motion:
+Once the intro completes, clicking the button triggers the exit timeline. Everything happens in a tightly choreographed sequence:
 
+1. The preloader **scales down** to `0.75`, matching the hero's initial scale — this creates a visual echo between the two layers.
+2. The progress ring rewinds: `strokeDashoffset` goes negative, so the stroke exits the opposite way it entered.
+3. The label swaps from "Engage" to "Access Granted" via overlapping line animations.
+4. The preloader panel wipes out using `clip-path`:
+
+```js
+gsap.to('.preloader', {
+  clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)',
+  duration: 1.5,
+  ease: 'hop',
+})
 ```
-x = centerX + cos(t × 0.5 + phase) × drift
-y = centerY + sin(t × 0.7 + phase) × drift
+
+5. A white revealer overlay on the hero does the same — wiping out left-to-right in near-sync, so the transition from dark to light feels seamless.
+6. Finally, the hero **scales up** to `1` and the headline words animate in with a staggered slide up.
+
+## The custom eases
+
+Two custom eases drive everything:
+
+```js
+CustomEase.create('hop', '0.9, 0, 0.1, 1')
+CustomEase.create('glide', '0.8, 0, 0.2, 1')
 ```
 
-Using different multipliers (`0.5` vs `0.7`) on the time parameter means horizontal and vertical movement are incommensurate — the path never exactly repeats.
-
-## Rendering
-
-Circles are stroked (not filled) at low opacity (`0.15`) so overlapping regions naturally compound, producing areas of higher perceived density without any explicit blending logic.
+`hop` is aggressive — fast acceleration, sharp overshoot at the end. It's used for all the big movements. `glide` is smoother and used for text reveals where you want elegance over drama.

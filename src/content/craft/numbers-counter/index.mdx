@@ -5,3 +5,68 @@ image: './banner.webp'
 description: 'Animated numbers counter'
 tags: ['math', 'javascript', 'css']
 ---
+
+Numbers are everywhere in UIs — prices, scores, statistics. Most of the time they just… appear. But there's something genuinely satisfying about watching a number animate into place, like a slot machine rolling to its final value. That's exactly what this is.
+
+The concept: instead of tweening a number directly (which is the boring way), each digit is a vertical column containing 0 through 9. To show a new number, you just scroll the column up to reveal the right digit. Stack a few of these columns side by side and you've got a full animated counter.
+
+## The structure
+
+Each column is a `<span>` with ten children — one for each digit. They're stacked vertically with a fixed height of `60px` each, so the total column is `600px` tall. The container has `overflow-y: hidden` and only shows `60px` at a time.
+
+```html
+<span class="counters">
+  <span data-key="0">0</span>
+  <span data-key="1">1</span>
+  <!-- ... up to 9 -->
+</span>
+```
+
+A `mask-image` gradient fades the top and bottom edges of the visible area, giving it that soft slot-machine look.
+
+## Animating the scroll
+
+When the counter changes, we split the new number into individual digits and scroll each column to the right position. If the target digit is `7`, we translate the column by `-420px` (7 × 60px):
+
+```js
+gsap.to(column, {
+  duration: 0.5,
+  y: `-${Number(newDigit) * 60}px`,
+  ease: 'power3.inOut',
+  filter: 'blur(2px)',
+  onComplete: () => {
+    gsap.set(column, { filter: 'blur(0px)' })
+  },
+})
+```
+
+The blur during transition is a small touch that reinforces the sense of motion — like the digits are moving fast enough to blur, then snapping back into focus.
+
+## Handling digit count changes
+
+When the number grows from, say, `9` to `10`, a new column needs to appear. When it shrinks back, columns need to hide. The `adjustActiveColumns` function handles this by fading columns in or out depending on how many digits the current number has:
+
+```js
+columnsNumber.forEach((column, index) => {
+  if (index < newLength) {
+    gsap.to(column, { opacity: 1, width: 'auto', duration: 0.1 })
+  } else {
+    gsap.to(column, { opacity: 0, width: 0, duration: 0.1 })
+  }
+})
+```
+
+Note that the columns are reversed — column index `0` represents the ones digit, `1` is tens, and so on. That's why `String(number).split('').reverse()` is used before mapping digits to columns.
+
+## The blocked state
+
+When the counter hits its limit (or tries to go below zero), it shakes. A quick GSAP timeline bounces the whole wrapper left and right to communicate "nope":
+
+```js
+let blockedTl = gsap.timeline({ repeat: 1, repeatDelay: 0.1 })
+blockedTl
+  .to(buttonsDiv, { x: 5, ease: 'bounce.in', duration: 0.01 })
+  .to(buttonsDiv, { x: -5, ease: 'bounce.in', duration: 0.01 })
+```
+
+Small detail, but it makes the interaction feel responsive rather than just ignoring the click.
