@@ -6,9 +6,9 @@ export const SITE: Site = {
   href: 'https://cristhianf.dev',
   author: 'cristhian-fs',
   locale: 'pt-BR',
-  featuredPostCount: 6,
+  featuredPostCount: 4,
   postsPerPage: 3,
-  featuredCraftCount: 8,
+  featuredCraftCount: 4,
 }
 
 export const NAV_LINKS: SocialLink[] = [
@@ -113,7 +113,7 @@ export const TECHSTACK: Tech[] = [
     icon: 'neovim',
   },
   {
-    name: 'Shell script',
+    name: 'Bash Script',
     icon: 'bash',
   },
   {
