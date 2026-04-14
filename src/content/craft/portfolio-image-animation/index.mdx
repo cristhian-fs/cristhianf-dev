@@ -1,0 +1,83 @@
+---
+title: "Portfolio Image Animation"
+description: "Animation of portfolio images on mouse enter, move and leave"
+date: 2024-11-07
+tags: ["css","js","gsap"]
+image: "./banner.png"
+---
+
+Portfolio lists are usually just text in a grid. Hover states are boring — maybe a color change, maybe an underline. This takes a different approach: hover a project row and a preview image floats up next to your cursor, while the images slide through a stack to match whichever row you're on.
+
+It feels like peeking into each project without ever leaving the list. Inspired by Dennis Snellenberg's work.
+
+## The floating image panel
+
+There's a fixed `div` that sits off-screen at `width: 0; height: 0` — invisible, but present. Inside it is an inner wrapper that contains all the project images stacked vertically (each `100%` tall), like a film strip. When the mouse enters the project list, the panel grows to its full size with a CSS transition:
+
+```css
+.project-image {
+  width: 0;
+  height: 0;
+  transition: all 0.4s cubic-bezier(0.39, 0.03, 0.83, 0.37);
+}
+
+.project-image.active {
+  width: clamp(8em, 20vw, 32em);
+  height: 320px;
+  transition: all 0.4s cubic-bezier(0.29, 0.9, 0.83, 1);
+}
+```
+
+Notice the different easing curves between the expand and collapse states — the expand is snappy and overshoots slightly (spring-like), while the collapse is sharp and fast. This asymmetry makes the interaction feel lively.
+
+## Following the cursor
+
+Two elements follow the mouse: the custom cursor (a small blue circle that expands on hover) and the image panel itself. Both use GSAP to track `mousemove`, but with different `duration` values:
+
+```js
+// cursor snaps quickly
+gsap.to(customCursor, {
+  duration: 0.3,
+  left: e.clientX,
+  top: e.clientY,
+  ease: 'power3.out',
+})
+
+// image panel lags behind
+gsap.to(projectImage, {
+  duration: 0.7,
+  left: e.clientX,
+  top: e.clientY,
+  ease: 'power3.out',
+})
+```
+
+The cursor moves in `0.3s`, the image follows at `0.7s`. That offset makes the image feel heavier, like it has mass. The cursor leads, the image trails. Small difference, big impact on feel.
+
+## Sliding between images
+
+When hovering a specific project row, the inner image wrapper translates upward to reveal the corresponding image. Since each image is `100%` of the container height, moving `-100%` shows the second image, `-200%` the third, and so on:
+
+```js
+projectsEl.forEach((project, index) => {
+  project.addEventListener('mouseenter', () => {
+    gsap.to(sliderImages, {
+      y: `${index * -100}%`,
+      duration: 0.5,
+      ease: 'power3.inOut',
+    })
+  })
+})
+```
+
+It's essentially a vertical carousel where the scroll position is controlled by which row you're hovering — no scroll, no click, just mouse position.
+
+## Desktop only
+
+The whole script is wrapped in a GSAP `matchMedia` check:
+
+```js
+mm.add('(min-width: 768px)', () => { /* ... */ })
+```
+
+On mobile there's no hovering, so the interaction doesn't apply. Instead, the project items show their image inline (visible via CSS). Clean degradation without any feature detection hacks.

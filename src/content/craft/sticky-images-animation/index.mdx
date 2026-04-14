@@ -1,0 +1,93 @@
+---
+title: "Sticky Images Animation"
+description: "Sticky animation using css as main core and GSAP for a parallax effect"
+date: 2024-11-08
+tags: ["css","js","gsap","parallax"]
+image: "./banner.png"
+---
+
+Travel sites and editorial layouts often use this pattern: you scroll down, and a full-bleed image stays pinned in place while text slides over it. Then the next image takes over. It feels like flipping through a magazine, but in a browser.
+
+The interesting part is how little JavaScript this actually needs. The sticky pinning is done entirely with CSS — GSAP only comes in to add a parallax layer on top of that foundation.
+
+## The CSS sticky trick
+
+Each "project" block has two children: a `project_cover` (the full-bleed background image) and a `project_content` (the overlay with text and thumbnail). The cover is `position: absolute` and fills its parent. The content is `height: 300vh` — three times the viewport height — and contains a `position: sticky; top: 0` element inside.
+
+```css
+.project {
+  height: 100vh;
+}
+
+.project .project_content {
+  height: 300vh;
+  margin-top: -100vh;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+```
+
+The `margin-top: -100vh` pulls the content up so it overlaps with the previous section. This creates the layered overlap effect where the next project starts to slide in while you're still finishing the previous one.
+
+The first and last projects are exceptions — they use `height: 200vh` since they don't need to overlap on both sides.
+
+## The parallax layer
+
+GSAP's `ScrollTrigger` adds the depth. While you scroll through each project, its background image moves at a slower pace than the page — `y: 20%` over the full scroll range. This slight lag is what creates the parallax feel:
+
+```js
+gsap.to(projectCover, {
+  y: '20%',
+  scrollTrigger: {
+    trigger: project,
+    start: 'top 0%',
+    end: 'bottom 0%',
+    scrub: true,
+  },
+})
+```
+
+`scrub: true` ties the animation directly to scroll position instead of playing it on a timeline. No duration, no easing — just pure 1:1 scroll tracking, which is what makes parallax feel physical.
+
+## The section transition
+
+When the next section starts coming into view, a dark overlay fades in over the current animation container, and the container itself drifts downward. This gives the impression the current section is receding as the new one takes over:
+
+```js
+gsap.to(cover, {
+  opacity: 0.4,
+  scrollTrigger: {
+    trigger: sections[index + 1],
+    start: 'top 100%',
+    end: 'bottom 50%',
+    scrub: true,
+  },
+})
+
+gsap.to(container, {
+  y: 300,
+  scrollTrigger: {
+    trigger: sections[index + 1],
+    start: 'top 100%',
+    end: 'bottom 0%',
+    scrub: true,
+  },
+})
+```
+
+## Smooth scrolling with Lenis
+
+Lenis handles scroll smoothing. The key integration point is wiring Lenis's RAF loop into GSAP's ticker and keeping ScrollTrigger in sync:
+
+```js
+const lenis = new Lenis()
+lenis.on('scroll', ScrollTrigger.update)
+gsap.ticker.add((time) => { lenis.raf(time * 1000) })
+gsap.ticker.lagSmoothing(0)
+```
+
+Without this, GSAP's ScrollTrigger would read native scroll events and Lenis's interpolated position would be out of sync. The `lagSmoothing(0)` call prevents GSAP from trying to "catch up" after tab focus loss, which would cause a jarring jump.

@@ -1,0 +1,103 @@
+---
+title: "Infinite portfolio image animation"
+description: "Infinite scroll projects animation using Javascript and GSAP"
+date: 2024-11-11
+tags: ["css","js","gsap"]
+image: "./banner.png"
+---
+
+Portfolios need to show a lot of work without feeling cluttered. One solution is a full-screen slider where each project takes over the entire viewport and you navigate by scrolling. The "infinite" part means it loops — scroll past the last project and you're back at the first, scroll before the first and you jump to the last. No dead ends.
+
+The visual language here is layered: a large moody cover image fills the background, a smaller thumbnail sits in the foreground, and the project title floats on the left. Each scroll wheel tick advances the whole thing with a coordinated wipe-and-drift transition.
+
+## The structure
+
+Three independent layers are stacked on top of each other inside the wrapper:
+
+- **`project-headings`** — title lines and caption, positioned absolute on the left
+- **`project-thumbs`** — the small foreground thumbnail, a fixed-size box with `overflow: hidden`
+- **`project-cover-image`** — full-screen background buttons, one per project
+
+All cover buttons and thumb wrappers start hidden except the active one. `initAnimation` hides everything non-active with `display: none` on load and populates the title text for the first slide.
+
+## The wipe transition
+
+The core of each slide change is a `clip-path: inset()` animation. On next slide, the current element wipes upward — the inset grows from the bottom:
+
+```js
+gsap.fromTo(thumbWrappers[index],
+  { clipPath: 'inset(0 0 0% 0)' },
+  { clipPath: 'inset(100% 0% 0 0)', ease: 'power4.inOut', duration: 1 }
+)
+```
+
+For previous slide, it wipes downward — inset grows from the top:
+
+```js
+gsap.fromTo(thumbWrappers[index],
+  { clipPath: 'inset(0 0 0% 0)' },
+  { clipPath: 'inset(0% 0 100% 0)', ease: 'power4.inOut', duration: 0.75 }
+)
+```
+
+The direction flip is what makes going backward feel different from going forward — the incoming slide appears to come from below when scrolling down, and from above when scrolling up.
+
+## The parallax drift
+
+While the clip-path wipes, the images inside the wrappers also move. The current image drifts away in the scroll direction, and the incoming image arrives from the opposite side:
+
+```js
+// current image exits downward
+gsap.to(currentThumb, { y: 100, ease: 'power4.inOut', duration: 1 })
+
+// next image enters from above
+gsap.fromTo(nextThumb, { y: -100 }, { y: 0, ease: 'power4.inOut', duration: 1 })
+```
+
+Since the thumb wrapper clips its contents (`overflow: hidden`), the image movement is only visible within the wipe window — giving depth, like the image slides independently of its container.
+
+The same logic applies to the full-screen cover, with an added scale: covers enter at `scale(1.3)` and settle to `scale(1.1)` at rest. That slight persistent zoom keeps the background feeling alive.
+
+## The text animation
+
+Title lines are generated dynamically as HTML — each line wrapped in a `.title-mask` div (which acts as a clip) with a `.title-line` inside. On transition, current lines slide out in the scroll direction, then new lines are injected and animated in from the opposite side:
+
+```js
+gsap.to(currentTexts, {
+  y: direction === 'up' ? '-100%' : '100%',
+  duration: 0.4,
+  onComplete: () => {
+    generateTexts(nextIndex)  // swap DOM
+    gsap.from('.title-line', {
+      y: direction === 'up' ? '100%' : '-100%',
+      duration: 1,
+    })
+  }
+})
+```
+
+The caption fades out and back in simultaneously. Regenerating the DOM inside `onComplete` means you never see two titles at once — the old one is fully gone before the new one is injected.
+
+## The infinite loop
+
+Index management uses modulo arithmetic to wrap around naturally:
+
+```js
+function getNextIndex(index) { return (index + 1) % totalSlides }
+function getPreviousIndex(index) { return (index - 1 + totalSlides) % totalSlides }
+```
+
+Adding `totalSlides` before the modulo on previous prevents negative indices — in JavaScript, `-1 % 5` is `-1`, not `4`, so the `+ totalSlides` corrects that.
+
+## Scroll debounce
+
+A simple `isScrolling` flag blocks new transitions while one is running. It resets on a timeout rather than on animation `onComplete` — a shorter fixed delay that lets users trigger the next slide slightly before the current one fully lands, keeping the interaction feeling responsive without letting them spam-scroll through slides:
+
+```js
+function nextSlide() {
+  if (isScrolling) return
+  isScrolling = true
+  // ... trigger animations
+  setTimeout(() => { isScrolling = false }, 500)
+}
+```

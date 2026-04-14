@@ -1,0 +1,573 @@
+---
+import CraftLayout from '@/layouts/craft-layout.astro'
+---
+
+<CraftLayout craftId="infinite-portfolio-image-animation">
+  <section class="projects-scroll">
+    <div class="projects-wrapper">
+      <div class="project-headings">
+        <div class="title"></div>
+        <div class="subtitle"></div>
+      </div>
+      <div class="project-thumbs">
+        <div class="thumb-wrapper">
+          <img
+            class="thumb-image"
+            alt="project-image"
+            src="https://images.unsplash.com/photo-1730632694635-562d4356fd8d?q=80&w=1934&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          />
+        </div>
+        <div class="thumb-wrapper">
+          <img
+            class="thumb-image"
+            alt="project-image"
+            src="https://images.unsplash.com/photo-1729608462362-21193b628e56?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          />
+        </div>
+        <div class="thumb-wrapper">
+          <img
+            class="thumb-image"
+            alt="project-image"
+            src="https://images.unsplash.com/photo-1730435136320-1410fa8bed02?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          />
+        </div>
+        <div class="thumb-wrapper">
+          <img
+            class="thumb-image"
+            alt="project-image"
+            src="https://images.unsplash.com/photo-1729845219737-d6c18f1c1367?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          />
+        </div>
+        <div class="thumb-wrapper">
+          <img
+            class="thumb-image"
+            alt="project-image"
+            src="https://images.unsplash.com/photo-1512692723619-8b3e68365c9c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          />
+        </div>
+      </div>
+      <div class="project-cover-image">
+        <button class="project-btn">
+          <div class="project-cover-wrapper">
+            <img
+              class="project-cover"
+              src="https://images.unsplash.com/photo-1730632694635-562d4356fd8d?q=80&w=1934&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            />
+          </div>
+        </button>
+        <button class="project-btn">
+          <div class="project-cover-wrapper">
+            <img
+              class="project-cover"
+              src="https://images.unsplash.com/photo-1729608462362-21193b628e56?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            />
+          </div>
+        </button>
+        <button class="project-btn">
+          <div class="project-cover-wrapper">
+            <img
+              class="project-cover"
+              src="https://images.unsplash.com/photo-1730435136320-1410fa8bed02?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            />
+          </div>
+        </button>
+        <button class="project-btn">
+          <div class="project-cover-wrapper">
+            <img
+              class="project-cover"
+              src="https://images.unsplash.com/photo-1729845219737-d6c18f1c1367?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            />
+          </div>
+        </button>
+        <button class="project-btn">
+          <div class="project-cover-wrapper">
+            <img
+              class="project-cover"
+              src="https://images.unsplash.com/photo-1512692723619-8b3e68365c9c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            />
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+</CraftLayout>
+
+<script>
+  import gsap from 'gsap'
+
+  function setup() {
+    const projects = [
+      {
+        titleLines: ['Aosta Valley', 'on Italy'],
+        caption: 'Beautiful view of an italy mountain',
+      },
+      {
+        titleLines: ['La Rochelle', 'France'],
+        caption: 'This is a french locale',
+      },
+      {
+        titleLines: ['Greek', 'Architecture'],
+        caption: 'Honestly idk what I write here',
+      },
+      {
+        titleLines: ['Uetliberg', 'Somewhere', 'in Switzerland'],
+        caption: 'Sky view of Utliberg',
+      },
+      {
+        titleLines: ['Kyoto', 'Japan'],
+        caption: 'This is a japonese locale',
+      },
+    ]
+
+    let currentIndex = 0
+    let totalSlides = projects.length
+    let isScrolling = false
+
+    const thumbWrappers: NodeListOf<HTMLElement> =
+      document.querySelectorAll('.thumb-wrapper')
+    const projectBtns: NodeListOf<HTMLElement> =
+      document.querySelectorAll('.project-btn')
+    const projectTitle = document.querySelector('.project-headings .title')
+    const projectCaption = document.querySelector('.project-headings .subtitle')
+
+    function initAnimation(index) {
+      thumbWrappers.forEach((wrapper, wrapperIndex) => {
+        if (wrapperIndex !== index) {
+          gsap.to(wrapper, {
+            display: 'none',
+            zIndex: 2,
+          })
+        }
+      })
+      projectBtns.forEach((btn, btnIndex) => {
+        if (btnIndex !== index) {
+          gsap.to(btn, {
+            display: 'none',
+          })
+        }
+      })
+      generateTexts(index)
+    }
+
+    function generateTexts(index) {
+      let projectTitleLines = projects[index].titleLines
+        .map((line) => {
+          return `
+      <div class="title-mask">
+        <div class="title-line">
+          ${line}
+        </div>
+      </div>
+    `
+        })
+        .join('')
+
+      projectTitle.innerHTML = projectTitleLines
+      projectCaption.textContent = projects[index].caption
+    }
+
+    initAnimation(currentIndex)
+
+    function getNextIndex(index: number) {
+      return (index + 1) % totalSlides
+    }
+
+    function getPreviousIndex(index: number) {
+      return (index - 1 + totalSlides) % totalSlides
+    }
+
+    function nextSlideAnimation(index: number) {
+      let currentThumb = thumbWrappers[index].querySelector('.thumb-image')
+      let nextIndex = getNextIndex(index)
+      let nextThumb = thumbWrappers[nextIndex].querySelector('.thumb-image')
+
+      gsap.set(thumbWrappers[nextIndex], {
+        display: 'block',
+        zIndex: 1,
+      })
+
+      gsap.fromTo(
+        thumbWrappers[index],
+        {
+          clipPath: 'inset(0 0 0% 0)',
+          zIndex: 2,
+        },
+        {
+          clipPath: 'inset(100% 0% 0 0)',
+          zIndex: 1,
+          ease: 'power4.inOut',
+          duration: 1,
+          onComplete: () => {
+            thumbWrappers[index].style.display = 'none'
+            gsap.set(thumbWrappers[index], {
+              clearProps: 'clip-path, z-index',
+            })
+          },
+        },
+      )
+
+      gsap.to(currentThumb, {
+        y: 100,
+        ease: 'power4.inOut',
+        duration: 1,
+        onComplete: () => {
+          gsap.set(currentThumb, {
+            clearProps: 'transform',
+          })
+        },
+      })
+
+      gsap.fromTo(
+        nextThumb,
+        {
+          y: -100,
+        },
+        {
+          y: 0,
+          ease: 'power4.inOut',
+          duration: 1,
+          onComplete: () => {
+            gsap.set(nextThumb, {
+              clearProps: 'transform',
+            })
+          },
+        },
+      )
+
+      // cover animations
+      let currentCover = projectBtns[index].querySelector('.project-cover')
+      let nextCover = projectBtns[nextIndex].querySelector('.project-cover')
+
+      projectBtns[nextIndex].style.display = 'block'
+
+      gsap.fromTo(
+        projectBtns[index],
+        {
+          clipPath: 'inset(0 0 0% 0)',
+          zIndex: 2,
+        },
+        {
+          clipPath: 'inset(0% 0 100% 0)',
+          zIndex: 1,
+          ease: 'power4.inOut',
+          duration: 1,
+          onComplete: () => {
+            gsap.set(projectBtns[index], {
+              clearProps: 'clip-path',
+            })
+            projectBtns[index].style.display = 'none'
+          },
+        },
+      )
+
+      gsap.to(currentCover, {
+        scale: 1.3,
+        y: -100,
+        ease: 'power4.inOut',
+        duration: 1,
+      })
+
+      gsap.fromTo(
+        nextCover,
+        {
+          scale: 1.3,
+          y: 100,
+        },
+        {
+          scale: 1.1,
+          y: 0,
+          ease: 'power4.inOut',
+          duration: 1,
+        },
+      )
+    }
+
+    function previousSlideAnimation(index) {
+      let currentThumb = thumbWrappers[index].querySelector('.thumb-image')
+      let previousIndex = getPreviousIndex(index)
+      let previousThumb =
+        thumbWrappers[previousIndex].querySelector('.thumb-image')
+
+      gsap.set(thumbWrappers[previousIndex], {
+        display: 'block',
+        zIndex: 1,
+      })
+
+      gsap.fromTo(
+        thumbWrappers[index],
+        {
+          clipPath: 'inset(0 0 0% 0)',
+          zIndex: 2,
+        },
+        {
+          clipPath: 'inset(0% 0 100% 0)',
+          zIndex: 1,
+          ease: 'power4.inOut',
+          duration: 0.75,
+          onComplete: () => {
+            thumbWrappers[index].style.display = 'none'
+            gsap.set(thumbWrappers[index], {
+              clearProps: 'clip-path, z-index',
+            })
+          },
+        },
+      )
+
+      gsap.to(currentThumb, {
+        y: -100,
+        ease: 'power4.inOut',
+        duration: 0.75,
+        onComplete: () => {
+          gsap.set(currentThumb, {
+            clearProps: 'transform',
+          })
+        },
+      })
+
+      gsap.fromTo(
+        previousThumb,
+        {
+          y: 100,
+        },
+        {
+          y: 0,
+          ease: 'power4.inOut',
+          duration: 0.75,
+        },
+      )
+
+      // cover animations
+      let currentCover = projectBtns[index].querySelector('.project-cover')
+
+      let previousCover =
+        projectBtns[previousIndex].querySelector('.project-cover')
+
+      projectBtns[previousIndex].style.display = 'block'
+
+      gsap.fromTo(
+        projectBtns[index],
+        {
+          clipPath: 'inset(0% 0 0 0)',
+          zIndex: 2,
+        },
+        {
+          clipPath: 'inset(100% 0 0 0)',
+          zIndex: 1,
+          ease: 'power4.inOut',
+          duration: 0.75,
+          onComplete: () => {
+            projectBtns[index].style.display = 'none'
+            projectBtns[index].style.clipPath = ''
+          },
+        },
+      )
+
+      gsap.to(currentCover, {
+        scale: 1.2,
+        y: 100,
+        ease: 'power4.inOut',
+        duration: 0.75,
+        onComplete: () => {
+          gsap.set(currentCover, {
+            clearProps: 'transform',
+          })
+        },
+      })
+
+      gsap.fromTo(
+        previousCover,
+        {
+          scale: 1.2,
+          y: -100,
+        },
+        {
+          scale: 1.1,
+          y: 0,
+          ease: 'power4.inOut',
+          duration: 0.75,
+        },
+      )
+    }
+
+    function textChangeAnimation(index: number, direction: 'up' | 'bottom') {
+      let currentTexts = document.querySelectorAll('.title-line')
+
+      gsap.to('.subtitle', {
+        opacity: 0,
+        ease: 'power4.in',
+        duration: 0.4,
+      })
+
+      gsap.to(currentTexts, {
+        y: direction === 'up' ? '-100%' : '100%',
+        ease: 'power4.in',
+        duration: 0.4,
+        onComplete: () => {
+          direction === 'up'
+            ? generateTexts((index + 1) % projects.length)
+            : generateTexts((index - 1 + projects.length) % projects.length)
+
+          currentTexts = document.querySelectorAll('.title-line')
+
+          gsap.from(currentTexts, {
+            y: direction === 'up' ? '100%' : '-100%',
+            ease: 'power4.out',
+            duration: 1,
+          })
+          gsap.to('.subtitle', {
+            opacity: 1,
+            ease: 'power4.out',
+            duration: 1,
+          })
+        },
+      })
+    }
+
+    function nextSlide() {
+      if (isScrolling) return
+
+      isScrolling = true
+      nextSlideAnimation(currentIndex)
+      textChangeAnimation(currentIndex, 'up')
+
+      currentIndex = (currentIndex + 1) % totalSlides
+
+      setTimeout(() => {
+        isScrolling = false
+      }, 500)
+    }
+
+    function previousSlide() {
+      if (isScrolling) return
+
+      isScrolling = true
+      previousSlideAnimation(currentIndex)
+      textChangeAnimation(currentIndex, 'bottom')
+
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides
+
+      setTimeout(() => {
+        isScrolling = false
+      }, 1000)
+    }
+
+    window.addEventListener('wheel', (event) => {
+
+      console.log(event.target)
+      if (event.deltaY > 0) {
+        nextSlide()
+      } else {
+        previousSlide()
+      }
+    })
+  }
+
+  document.addEventListener('astro:page-load', setup)
+</script>
+
+<style>
+  .projects-scroll {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .projects-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    z-index: 1;
+  }
+
+  .project-thumbs {
+    width: 20vw;
+    height: calc(20vw * 1.25); /* 4 / 5 aspect ratio */
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    position: relative;
+    z-index: 5;
+  }
+
+  .thumb-wrapper,
+  .thumb-image {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .thumb-wrapper {
+    overflow: hidden;
+  }
+
+  .thumb-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .project-cover-image,
+  .project-btn,
+  .project-cover-wrapper {
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .project-cover-wrapper {
+    background: #09090b;
+  }
+  .project-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.75;
+    transform: scale(1.1);
+  }
+
+  .project-headings {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10vw;
+    z-index: 5;
+    & .title {
+      font-size: 4vw;
+      line-height: 4vw;
+      letter-spacing: -0.05vw;
+      font-weight: 500;
+    }
+
+    & .subtitle {
+      font-size: 1.5vw;
+      line-height: 2.2vw;
+      opacity: 0.8;
+    }
+  }
+  .title-mask {
+    overflow: hidden;
+  }
+</style>
