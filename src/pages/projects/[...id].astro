@@ -1,17 +1,14 @@
 ---
-import Aside from '@/components/AsideNavigation.astro'
-import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
-import ProjectHead from '@/components/projects/ProjectHead.astro'
-import ProjectNavigation from '@/components/projects/ProjectNavigation.astro'
-import TOCHeader from '@/components/TOCHeader.astro'
+import Aside from '@/components/aside-navigation.astro'
+import Breadcrumbs from '@/components/breadcrumbs.astro'
+import Link from '@/components/link.astro'
+import ProjectHead from '@/components/projects/project-head.astro'
+import ProjectNavigation from '@/components/projects/project-navigation.astro'
+import TOCHeader from '@/components/toc-header.astro'
 import { badgeVariants } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
-import Layout from '@/layouts/Layout.astro'
-import {
-  getAdjacentProjects,
-  getAllProjects,
-} from '@/lib/data-utils'
+import Layout from '@/layouts/layout.astro'
+import { getAdjacentProjects, getAllProjects } from '@/lib/data-utils'
 import { cn, formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
@@ -41,32 +38,42 @@ const navigation = await getAdjacentProjects(currentProjectId)
   }
 
   <main
-    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
   >
     <Aside />
     <div class="space-y-10">
       <div class="flex flex-col gap-y-3">
-        <Breadcrumbs 
+        <Breadcrumbs
           items={[
-          { label: 'Projects', href: '/projects', },
-          { label: project.data.name, },
-        ]} />
+            { label: 'Projects', href: '/projects' },
+            { label: project.data.name },
+          ]}
+        />
         <h1
           class="scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl"
           id="post-title"
         >
           {project.data.name}
         </h1>
-        <div class="text-muted-foreground flex flex-wrap items-center gap-x-3 text-sm">
+        <div
+          class="text-muted-foreground flex flex-wrap items-center gap-x-3 text-sm"
+        >
           <span>
             {formatDate(project.data.startDate)} –{' '}
-            {project.data.endDate ? formatDate(project.data.endDate) : 'Present'}
+            {
+              project.data.endDate
+                ? formatDate(project.data.endDate)
+                : 'Present'
+            }
           </span>
         </div>
         <div class="flex flex-wrap gap-2">
           {
             project.data.tags.map((tag) => (
-              <a href={`/tags/${tag}`} class={badgeVariants({ variant: 'secondary' })}>
+              <a
+                href={`/tags/${tag}`}
+                class={badgeVariants({ variant: 'secondary' })}
+              >
                 <Icon name="lucide:hash" class="size-3" />
                 {tag}
               </a>
@@ -99,7 +106,10 @@ const navigation = await getAdjacentProjects(currentProjectId)
       <article class="prose max-w-none">
         <Content />
       </article>
-      <ProjectNavigation nextPost={navigation.newer} prevPost={navigation.older} />
+      <ProjectNavigation
+        nextPost={navigation.newer}
+        prevPost={navigation.older}
+      />
     </div>
   </main>
 

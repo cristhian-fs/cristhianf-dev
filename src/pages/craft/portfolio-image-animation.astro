@@ -393,9 +393,13 @@ import CraftLayout from '@/layouts/craft-layout.astro'
     let mm = gsap.matchMedia()
 
     mm.add('(min-width: 768px)', () => {
-      const customCursor = document.getElementById('custom-cursor')
+      const customCursor = document.getElementById(
+        'custom-cursor',
+      ) as HTMLElement
       const viewText = customCursor.querySelector('p')
-      const projectImage = document.getElementById('project-image')
+      const projectImage = document.getElementById(
+        'project-image',
+      ) as HTMLElement
 
       const projects = document.getElementById('projects')
 
@@ -405,7 +409,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
       )
 
       projectsEl.forEach((project, index) => {
-        project.addEventListener('mouseenter', (e) => {
+        project.addEventListener('mouseenter', () => {
           gsap.to(sliderImages, {
             y: `${index * -100}%`,
             duration: 0.5,
@@ -438,12 +442,12 @@ import CraftLayout from '@/layouts/craft-layout.astro'
         })
       })
 
-      projects.addEventListener('mouseenter', (e) => {
+      projects?.addEventListener('mouseenter', () => {
         customCursor.classList.add('active')
         projectImage.classList.add('active')
       })
 
-      projects.addEventListener('mouseleave', (e) => {
+      projects?.addEventListener('mouseleave', () => {
         customCursor.classList.remove('active')
         projectImage.classList.remove('active')
       })

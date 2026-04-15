@@ -1,9 +1,9 @@
 ---
-import Aside from '@/components/AsideNavigation.astro'
-import AuthorCard from '@/components/AuthorCard.astro'
-import BlogCard from '@/components/BlogCard.astro'
-import PageHead from '@/components/PageHead.astro'
-import Layout from '@/layouts/Layout.astro'
+import Aside from '@/components/aside-navigation.astro'
+import AuthorCard from '@/components/author-card.astro'
+import BlogCard from '@/components/blog-card.astro'
+import PageHead from '@/components/page-head.astro'
+import Layout from '@/layouts/layout.astro'
 import { getAllAuthors, getPostsByAuthor } from '@/lib/data-utils'
 
 export async function getStaticPaths() {
@@ -25,7 +25,7 @@ const authorPosts = await getPostsByAuthor(author.id)
     description={author.data.bio || `Profile of ${author.data.name}.`}
   />
   <main
-    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
   >
     <Aside />
     <div class="space-y-12">

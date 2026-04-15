@@ -1,9 +1,9 @@
 ---
-import Aside from '@/components/AsideNavigation.astro'
-import Link from '@/components/Link.astro'
-import PageHead from '@/components/PageHead.astro'
+import Aside from '@/components/aside-navigation.astro'
+import Link from '@/components/link.astro'
+import PageHead from '@/components/page-head.astro'
 import { badgeVariants } from '@/components/ui/badge'
-import Layout from '@/layouts/Layout.astro'
+import Layout from '@/layouts/layout.astro'
 import { getSortedTags } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 
@@ -13,7 +13,7 @@ const sortedTags = await getSortedTags()
 <Layout class="relative max-w-7xl px-4 pt-16">
   <PageHead slot="head" title="Tags" />
   <main
-    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
   >
     <Aside />
     <div class="flex flex-wrap gap-2">

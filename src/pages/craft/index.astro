@@ -1,23 +1,29 @@
 ---
-import Aside from '@/components/AsideNavigation.astro'
-import CraftCard from '@/components/CraftCard.astro'
-import PageHead from '@/components/PageHead.astro'
-import Layout from '@/layouts/Layout.astro'
+import Aside from '@/components/aside-navigation.astro'
+import CraftCard from '@/components/craft/craft-card.astro'
+import PageHead from '@/components/page-head.astro'
+import Layout from '@/layouts/layout.astro'
 import { getAllCrafts } from '@/lib/data-utils'
 
 const entries = await getAllCrafts()
 ---
 
 <Layout class="relative max-w-7xl px-4 pt-16">
-  <PageHead slot="head" title="Craft" description="Web animations & experiments" />
+  <PageHead
+    slot="head"
+    title="Craft"
+    description="Web animations & experiments"
+  />
   <main
-    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
   >
     <Aside />
     <div class="space-y-12">
       <div class="flex flex-col">
         <h1 class="text-lg">Craft</h1>
-        <p class="text-md text-muted-foreground">Web animations & experiments</p>
+        <p class="text-md text-muted-foreground">
+          Web animations & experiments
+        </p>
       </div>
       {
         entries.length > 0 ? (

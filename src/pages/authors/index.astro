@@ -1,8 +1,8 @@
 ---
-import Aside from '@/components/AsideNavigation.astro'
-import AuthorCard from '@/components/AuthorCard.astro'
-import PageHead from '@/components/PageHead.astro'
-import Layout from '@/layouts/Layout.astro'
+import Aside from '@/components/aside-navigation.astro'
+import AuthorCard from '@/components/author-card.astro'
+import PageHead from '@/components/page-head.astro'
+import Layout from '@/layouts/layout.astro'
 import { getAllAuthors } from '@/lib/data-utils'
 
 const authors = await getAllAuthors()
@@ -11,7 +11,7 @@ const authors = await getAllAuthors()
 <Layout class="relative max-w-7xl px-4 pt-16">
   <PageHead slot="head" title="Authors" />
   <main
-    class="relative grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-[1fr_35rem_1fr]"
   >
     <Aside />
     <div class="space-y-4">

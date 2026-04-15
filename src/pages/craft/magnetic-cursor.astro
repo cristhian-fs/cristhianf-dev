@@ -73,7 +73,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
 
     function handleMouseEnter(e: MouseEvent) {
       isStuck = true
-      const target = e.target as HTMLElement  // <-- cast aqui
+      const target = e.target as HTMLElement // <-- cast aqui
       const targetBox = target.getBoundingClientRect()
       cursor.classList.add('active')
 
@@ -90,7 +90,7 @@ import CraftLayout from '@/layouts/craft-layout.astro'
       })
     }
 
-    function handleMouseLeave(e: MouseEvent) {
+    function handleMouseLeave() {
       isStuck = false
       cursor.classList.remove('active')
       gsap.to(cursor, {
@@ -125,10 +125,10 @@ import CraftLayout from '@/layouts/craft-layout.astro'
         handleMouseEnter(e)
       })
 
-      link.addEventListener('mouseleave', (e) => {
+      link.addEventListener('mouseleave', () => {
         xTo(0)
         yTo(0)
-        handleMouseLeave(e)
+        handleMouseLeave()
       })
     })
   }

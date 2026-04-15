@@ -1,18 +1,18 @@
 ---
-import Aside from '@/components/AsideNavigation.astro'
-import PageHead from '@/components/PageHead.astro'
-import Layout from '@/layouts/Layout.astro'
+import Aside from '@/components/aside-navigation.astro'
+import PageHead from '@/components/page-head.astro'
+import Layout from '@/layouts/layout.astro'
 ---
 
 <Layout class="relative max-w-7xl px-4 pt-16">
   <PageHead slot="head" title="About" />
   <main
-    class="relative grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-[1fr_35rem_1fr] items-start"
+    class="relative grid grid-cols-1 items-start gap-4 md:grid-cols-[1fr_35rem_1fr] md:gap-8"
   >
     <Aside />
     <div class="space-y-20">
       <section class="flex flex-col gap-6">
-        <p class="text-muted-foreground text-sm font-mono">/about</p>
+        <p class="text-muted-foreground font-mono text-sm">/about</p>
         <div class="flex flex-col gap-4">
           <p class="text-foreground text-balance">
             I'm Cristhian, a front-end developer based in Brazil. I care about
@@ -21,13 +21,15 @@ import Layout from '@/layouts/Layout.astro'
           </p>
           <p class="text-muted-foreground text-sm text-balance">
             I've spent most of my time working with React and TypeScript, but I
-            pick up whatever the problem needs. Right now I'm deep into Bash scripting, and on the other hand, I'm also interested in web animations with GSAP and WebGL/ThreeJS.
+            pick up whatever the problem needs. Right now I'm deep into Bash
+            scripting, and on the other hand, I'm also interested in web
+            animations with GSAP and WebGL/ThreeJS.
           </p>
         </div>
       </section>
 
       <section class="flex flex-col gap-4">
-        <p class="text-muted-foreground text-sm font-mono">/values</p>
+        <p class="text-muted-foreground font-mono text-sm">/values</p>
         <ul class="text-muted-foreground flex flex-col gap-2 text-sm">
           <li>Simplicity over cleverness.</li>
           <li>Ship it, then make it better.</li>
@@ -37,7 +39,7 @@ import Layout from '@/layouts/Layout.astro'
       </section>
 
       <section class="flex flex-col gap-4">
-        <p class="text-muted-foreground text-sm font-mono">/contact</p>
+        <p class="text-muted-foreground font-mono text-sm">/contact</p>
         <p class="text-muted-foreground text-sm">
           Reach me at <a
             href="mailto:contato@cristhianf.dev"
