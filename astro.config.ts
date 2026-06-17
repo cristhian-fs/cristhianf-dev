@@ -64,7 +64,7 @@ export default defineConfig({
           inlineButtonBackgroundActiveOpacity: 'transparent',
           inlineButtonBackgroundIdleOpacity: '1',
         },
-        codePaddingInline: '0.5rem',
+        codePaddingInline: '0',
         lineNumbers: {
           foreground: 'var(--muted-foreground)',
         },

@@ -1,28 +1,30 @@
 .expressive-code figure {
   background: var(--muted) !important;
-  padding: 0.75rem !important;
+  padding: 1px !important;
 }
 
 .expressive-code figure span.title {
-  padding-inline: 0.25rem !important;
+  padding-inline: 0.5rem !important;
+  padding-block: 0.25rem !important;
+  background: transparent !important;
 }
 
 .expressive-code:has(figcaption span.title) .frame pre {
-  margin-top: 0.5rem !important;
+  margin-top: 0rem !important;
   background: transparent !important;
 }
 
 .expressive-code pre {
   background: transparent !important;
-  box-shadow:
-    0 1px 1px 0.5px rgba(41, 41, 41, 0.04),
-    0 3px 3px -1.5px rgba(41, 41, 41, 0.02),
-    0 6px 6px -3px rgba(41, 41, 41, 0.04),
-    0 12px 12px -6px rgba(41, 41, 41, 0.04),
-    0 24px 24px -12px rgba(41, 41, 41, 0.04),
-    0 48px 48px -24px rgba(41, 41, 41, 0.04),
-    0 0 0 1px rgba(41, 41, 41, 0.04),
-    inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06) !important;
+  /* box-shadow: */
+  /*   0 1px 1px 0.5px rgba(41, 41, 41, 0.04), */
+  /*   0 3px 3px -1.5px rgba(41, 41, 41, 0.02), */
+  /*   0 6px 6px -3px rgba(41, 41, 41, 0.04), */
+  /*   0 12px 12px -6px rgba(41, 41, 41, 0.04), */
+  /*   0 24px 24px -12px rgba(41, 41, 41, 0.04), */
+  /*   0 48px 48px -24px rgba(41, 41, 41, 0.04), */
+  /*   0 0 0 1px rgba(41, 41, 41, 0.04), */
+  /*   inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06) !important; */
 }
 .expressive-code pre > code {
   background: var(--background) !important;
@@ -30,15 +32,20 @@
 }
 
 .expressive-code .copy {
-  right: 0.75rem !important;
-  top: 0.75rem !important;
+  right: 0.5rem !important;
+  top: 0.5rem !important;
 }
 
 .expressive-code .copy button {
   opacity: 1 !important;
-  background: transparent !important;
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+  background: none !important;
 }
 
+.expressive-code .copy button::after {
+  margin: 0 !important;
+}
 .expressive-code .frame.has-title pre {
   border-top-left-radius: var(--radius-md) !important;
   border-top-right-radius: var(--radius-md) !important;
