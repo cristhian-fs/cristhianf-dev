@@ -1,0 +1,509 @@
+---
+title: 'My Neovim LSP setup in 2026'
+description: "mason, lspconfig,blink.cmp and the decisions I've made"
+date: 2026-06-11
+tags: ['coding', 'neovim', 'lsp', 'workflow']
+---
+
+import Callout from '@/components/callout.astro'
+
+## Introduction
+
+I've been struggling with LSP on neovim for a long time, probably skill issue, but nvm, it is what it is. I finally set up a good LSP with a couple plugins, maybe I don't need to change a word, at least I wouldn't until I get myself in a trouble that the code isn't linting or something like that.
+
+### mason.nvim
+
+[`mason.nvim`](https://github.com/mason-org/mason.nvim) it's a plugin that allows me(and you) to easily manage external editor tooling such as LSP servers, linters and formatters through a single interface. And I have a couple packages installed on mason, such as `astro-language-server`,`biome`,`deno`,`eslint-lsp`, `lua-language-server`, `prettier`, `typescript-language-server`, etc. But this is totally personal and you should install packages that you'll use in your daily workflow.
+
+That's my currently setup file for `mason.nvim`:
+
+```lua collapse={6-66}
+  {
+    -- LSP Configuration & Plugins
+    "williamboman/mason.nvim",
+    lazy = false,
+    dependencies = {
+      {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+          library = {
+            -- See the configuration section for more details
+            -- Load luvit types when the `vim.uv` word is found
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+            { path = "${3rd}/luassert/library", words = {
+              "assert",
+            } },
+            {
+              path = "${3rd}/busted/library",
+              words = {
+                "describe",
+                "it",
+                "before_each",
+                "after_each",
+              },
+            },
+          },
+        },
+      },
+      "neovim/nvim-lspconfig",
+      {
+        "aznhe21/actions-preview.nvim",
+        event = "LspAttach",
+        opts = {
+          diff = {
+            algorithm = "patience",
+            ignore_whitespace = true,
+          },
+        },
+      },
+      {
+        "brenoprata10/nvim-highlight-colors",
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {
+          render = "virtual",
+          virtual_symbol = "■",
+          enable_named_colors = false,
+          enable_tailwind = true,
+        },
+      },
+      {
+        "rachartier/tiny-code-action.nvim",
+        dependencies = {
+          { "nvim-lua/plenary.nvim" },
+        },
+        event = "LspAttach",
+        opts = {
+          backend = "delta",
+          picker = {
+            "snacks",
+            opts = {
+              layout = {
+                preset = "dropdown",
+              },
+            },
+          },
+        },
+      },
+    },
+    config = function()
+      require("mason").setup()
+      local on_lsp_attach = function(client, bufnr)
+        local lsp_map = function(keys, func, desc)
+          if desc then
+            desc = "LSP: " .. desc
+          end
+
+          vim.keymap.set("n", keys, func, { noremap = true, buffer = bufnr, desc = desc, silent = true })
+        end
+
+        lsp_map("<leader>ca", function()
+          require("tiny-code-action").code_action {}
+        end, "Code Action")
+        lsp_map("K", function()
+          if client.name == "rust-analyzer" then
+            vim.cmd.RustLsp { "hover", "actions" }
+          else
+            vim.lsp.buf.hover()
+          end
+        end, "Hover Documentation")
+        lsp_map("<leader>rn", vim.lsp.buf.rename, "Rename")
+        lsp_map("gD", vim.lsp.buf.definition, "Goto Declaration")
+        lsp_map("gi", vim.lsp.buf.implementation, "Goto Implementation")
+        lsp_map("gd", "<C-]>", "[G]oto [D]efinition")
+        lsp_map("<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
+
+        -- Various picker for lsp related stuff
+        if Snacks and Snacks.picker then
+          lsp_map("gr", Snacks.picker.lsp_references, "[G]oto [R]eferences")
+          lsp_map("gi", Snacks.picker.lsp_implementations, "[G]oto [I]mplementations")
+          lsp_map("<A-t>", Snacks.picker.lsp_type_definitions, "[G]oto [T]ype Definitions")
+          lsp_map("<D-l>", Snacks.picker.lsp_workspace_symbols, "Search workspace symbols")
+          lsp_map("<leader>ss", Snacks.picker.lsp_symbols, "[S]earch [S]ymbols")
+        end
+
+        lsp_map("<leader>lr", function()
+          vim.cmd "LspRestart"
+        end, "Lsp [R]eload")
+        lsp_map("<leader>li", function()
+          vim.cmd "LspInfo"
+        end, "Lsp [R]eload")
+        lsp_map("<leader>lh", function()
+          vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }, { bufnr })
+        end, "Lsp toggle inlay [h]ints")
+      end
+
+      -- vim.diagnostic.config { virtual_lines = true }
+      vim.diagnostic.config { virtual_text = true }
+
+      -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+      -- optimizes cpu usage source https://github.com/neovim/neovim/issues/23291
+      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
+
+      vim.diagnostic.config {
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = "󰚌 ",
+            [vim.diagnostic.severity.WARN] = " ",
+            [vim.diagnostic.severity.INFO] = " ",
+            [vim.diagnostic.severity.HINT] = "󱧡 ",
+          },
+          numhl = {
+            [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+            [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+            [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+            [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+          },
+          texthl = {
+            [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+            [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+            [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+            [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+          },
+        },
+      }
+
+      -- Your existing floating preview override
+      local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+      function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+        opts = opts or {}
+        return orig_util_open_floating_preview(contents, syntax, opts, ...)
+      end
+
+      -- Set up global defaults first
+      vim.lsp.config("*", {
+        capabilities = capabilities,
+        on_attach = on_lsp_attach,
+        root_markers = { ".git" },
+      })
+
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            runtime = { version = "LuaJIT" },
+            workspace = { checkThirdParty = false },
+            telemetry = { enable = false },
+          },
+        },
+      })
+
+      vim.lsp.config("bashls", {
+        settings = { includeAllWorkspaceSymbols = true },
+      })
+
+      vim.lsp.config("ts_ls", {
+        on_attach = on_lsp_attach,
+      })
+
+      vim.lsp.config("tailwindcss", {
+        settings = {
+          tailwindCSS = {
+            experimental = {
+              classRegex = {
+                { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+              },
+            },
+          },
+        },
+        filetypes = {
+          "html",
+          "css",
+          "scss",
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "vue",
+          "svelte",
+          "astro",
+          "rescript",
+        },
+      })
+
+      vim.lsp.enable "lua_ls"
+      vim.lsp.enable "ts_ls"
+      vim.lsp.enable "html"
+      vim.lsp.enable "tailwindcss"
+      vim.lsp.enable "eslint"
+      vim.lsp.enable "jsonls"
+      vim.lsp.enable "cssls"
+      vim.lsp.enable "astro"
+
+    end,
+  },
+```
+
+As you can see I have some keybinds for that as well. And some of them are:
+
+- `<leader>ca`: Opens a code action floating window, it's useful for some interface/classes implementation, and I don't really have another use case for that yet.
+- `gD`: Goto Declaration, this is self explained.
+- `gi`: Goto Implementation.
+- `gd`: Goto definition.
+
+### conform.nvim
+
+This is a powerfull and lightweight formatter plugin that I'm in love with. It's good and fast, don't really need to explain a lot. Meanwhile, here's the [repository](https://github.com/stevearc/conform.nvim), and my config:
+
+```lua
+  {
+    "stevearc/conform.nvim",
+    config = function()
+      require("conform").setup {
+        formatters_by_ft = {
+          lua = { "stylua" },
+          javascript = { "prettierd", "prettier" },
+          javascriptreact = { "prettierd", "prettier" },
+          typescript = { "prettierd", "prettier" },
+          typescriptreact = { "prettierd", "prettier" },
+          html = { "prettierd", "prettier" },
+          css = { "prettierd", "prettier" },
+          json = { "prettierd", "prettier" },
+          yaml = { "prettierd", "prettier" },
+          markdown = { "prettierd", "prettier" },
+          svg = { "prettier" },
+          astro = { "prettier" },
+          prisma = { lsp_format = "first" },
+					mdx = { "prettierd", "prettier" }
+        },
+        format_on_save = {
+          timeout_ms = 3000,
+        },
+      }
+
+      local function format()
+        require("conform").format {
+          lsp_format = "fallback",
+        }
+      end
+
+      vim.keymap.set({ "n", "i" }, "<F12>", format, { desc = "Format", silent = true })
+    end,
+  },
+```
+
+### nvim-treesitter
+
+**nvim-treesitter** is a plugin that provides an interface to the [Tree-sitter](https://tree-sitter.github.io) parsing library. It allows Neovim to build structured syntax trees of source code in real-time, enabling highly precise syntax highlighting, code indentation, and advanced text navigation. (tks to the google AI for the definition)
+
+<Callout variant="important" title="nvim-treesitter and Neovim 0.12">
+  You don't really need `nvim-treesitter` in Neovim 0.12 or earlier. Since
+  Neovim 0.12 have native support to Tree-sitter. I have this configuration
+  because of the `nvim-treesitter-textobjects`.
+</Callout>
+
+```lua
+return {
+  "nvim-treesitter/nvim-treesitter",
+  branch = "main",
+  build = ":TSUpdate",
+  lazy = false,
+  dependencies = {
+    {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+      branch = "main",
+      config = function()
+        local select = require "nvim-treesitter-textobjects.select"
+        local swap = require "nvim-treesitter-textobjects.swap"
+        local move = require "nvim-treesitter-textobjects.move"
+
+        require("nvim-treesitter-textobjects").setup {
+          select = {
+            lookahead = true,
+          },
+          move = {
+            set_jumps = true,
+          },
+        }
+
+        -- Select keymaps
+        local select_maps = {
+          ["ap"] = "@parameter.outer",
+          ["ip"] = "@parameter.inner",
+          ["au"] = "@attribute.outer",
+          ["iu"] = "@attribute.inner",
+          ["af"] = "@function.outer",
+          ["if"] = "@function.inner",
+          ["ac"] = "@class.outer",
+          ["ic"] = "@class.inner",
+          ["as"] = "@statement.outer",
+          ["is"] = "@statement.inner",
+          ["av"] = "@assignment.outer",
+          ["iv"] = "@assignment.inner",
+          ["in"] = "@assignment.lhs",
+        }
+        for key, query in pairs(select_maps) do
+          vim.keymap.set({ "x", "o" }, key, function()
+            select.select_textobject(query, "textobjects")
+          end)
+        end
+
+        -- Move keymaps
+        local move_next_start = { ["]["] = "@function.outer", ["]c"] = "@class.outer" }
+        local move_next_end = { ["]}"] = "@function.outer", ["]C"] = "@class.outer" }
+        local move_prev_start = { ["[{"] = "@function.outer", ["[c"] = "@class.outer" }
+        local move_prev_end = { ["[}"] = "@function.outer", ["[C"] = "@class.outer" }
+
+        for key, query in pairs(move_next_start) do
+          vim.keymap.set({ "n", "x", "o" }, key, function()
+            move.goto_next_start(query, "textobjects")
+          end)
+        end
+        for key, query in pairs(move_next_end) do
+          vim.keymap.set({ "n", "x", "o" }, key, function()
+            move.goto_next_end(query, "textobjects")
+          end)
+        end
+        for key, query in pairs(move_prev_start) do
+          vim.keymap.set({ "n", "x", "o" }, key, function()
+            move.goto_previous_start(query, "textobjects")
+          end)
+        end
+        for key, query in pairs(move_prev_end) do
+          vim.keymap.set({ "n", "x", "o" }, key, function()
+            move.goto_previous_end(query, "textobjects")
+          end)
+        end
+
+        -- Swap keymaps
+        vim.keymap.set("n", "<A-p>", function()
+          swap.swap_next "@parameter.inner"
+        end)
+        vim.keymap.set("n", "<A-P>", function()
+          swap.swap_previous "@parameter.inner"
+        end)
+      end,
+    },
+    {
+      "nvim-treesitter/nvim-treesitter-context",
+      opts = {
+        max_lines = 1,
+      },
+    },
+  },
+  main = "nvim-treesitter",
+  opts = {
+    sync_install = false,
+    auto_install = true,
+  },
+  config = function(_, opts)
+    require("nvim-treesitter.install").compilers = { "gcc", "clang" }
+    require("nvim-treesitter").setup(opts)
+  end,
+  init = function()
+    local ensureInstalled = {
+      "tsx",
+      "markdown",
+      "markdown_inline",
+      "mdx",
+      "hurl",
+      "prisma",
+    }
+
+    local alreadyInstalled = require("nvim-treesitter.config").get_installed()
+    local parsersToInstall = vim
+      .iter(ensureInstalled)
+      :filter(function(parser)
+        return not vim.tbl_contains(alreadyInstalled, parser)
+      end)
+      :totable()
+    require("nvim-treesitter").install(parsersToInstall)
+
+    vim.treesitter.language.register("markdown", "mdx")
+  end,
+}
+```
+
+The keybinds for the `nvim-treesitter-textobjects` are for visual and operator-pending(`d`, `y`, `c`) modes:
+
+| Keymap | Objeto             | Descrição                    |
+| ------ | ------------------ | ---------------------------- |
+| `dap`  | `@parameter.outer` | delete param + comma         |
+| `dip`  | `@parameter.inner` | delete with value            |
+| `daf`  | `@function.outer`  | delete whole function        |
+| `dif`  | `@function.inner`  | deles only the function body |
+
+#### `dap` / `dip` - parameters
+
+```typescript
+function foo(name: string, age: number) { ... }
+//           ^^^^                   dip -> only the value
+//           ^^^^^^^^^^^^^          dap -> value + comma
+```
+
+#### `din` / `div` - function
+
+```typescript
+const x = someFunction()
+//    ^   din -> left side
+//        ^^^^^^^^^^^^^   dap -> div -> right side
+```
+
+#### `daf` / `dif` - function
+
+```typescript
+function doSomething() {
+  // dif -> only the value
+}
+// daf -> whole function
+```
+
+### blink.cmp
+
+[`blink.cmp`](https://github.com/saghen/blink.cmp) it's an autocomplete that I use instead of the classic `nvim-cmp`. It's faster, has fuzzy matching with type resistence, and already comes with LSP support, snippets, signature help and cmdline without needing extra plugins.
+
+```lua title="lua/plugins/cmp.lua"
+return {
+  "saghen/blink.cmp",
+  lazy = false,
+  version = "1.*",
+  opts = {
+    keymap = { preset = "default" },
+    appearance = {
+      nerd_font_variant = "mono", -- or "normal" if your nerd font isn't mono
+    },
+    completion = {
+      documentation = {
+        auto_show = true,
+        auto_show_delay_ms = 300,
+      },
+      ghost_text = { enabled = true },
+      menu = {
+        draw = {
+          treesitter = { "lsp" },
+          columns = {
+            { "kind_icon" },
+            { "label", "label_description", gap = 1 },
+          },
+        },
+      },
+    },
+    sources = {
+      default = { "lsp", "path", "snippets", "buffer" },
+    },
+    fuzzy = { implementation = "prefer_rust_with_warning" },
+  },
+}
+```
+
+#### Layout menu
+
+The `completion.menu.draw.columns` defines the order and which components appear. The available are:
+
+- `kind_icon`: Icon type (function, variable, class...)
+- `kind`: type name in text (`Function`, `Variable`...)
+- `label`: item name + label detail
+- `label_description`: where item comes from (util for auto-imports)
+- `source_name` / `source_id`: which source brought the item
+
+For a `nvim-cmp` menu like:
+
+```lua
+columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } }
+```
+
+---
+
+That's all I'm currently using for my neovim LSP at the moment, if I change something I'll probably change this post. You can also check the [source code](https://github.com/cristhian-fs/nvim-config).
