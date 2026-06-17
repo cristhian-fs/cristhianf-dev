@@ -2,7 +2,7 @@ import type { IconMap, SocialLink, Site, Tech } from '@/types'
 
 export const SITE: Site = {
   title: 'Cristhian F.',
-  description: 'Front-end developer based in Brazil.',
+  description: 'FullStack developer based in Brazil.',
   href: 'https://cristhianf.dev',
   author: 'cristhian-fs',
   locale: 'pt-BR',
