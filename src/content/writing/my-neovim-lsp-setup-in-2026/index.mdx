@@ -18,222 +18,222 @@ I've been struggling with LSP on neovim for a long time, probably skill issue, b
 That's my currently setup file for `mason.nvim`:
 
 ```lua collapse={6-66}
+{
+-- LSP Configuration & Plugins
+"williamboman/mason.nvim",
+lazy = false,
+dependencies = {
   {
-    -- LSP Configuration & Plugins
-    "williamboman/mason.nvim",
-    lazy = false,
-    dependencies = {
-      {
-        "folke/lazydev.nvim",
-        ft = "lua", -- only load on lua files
-        opts = {
-          library = {
-            -- See the configuration section for more details
-            -- Load luvit types when the `vim.uv` word is found
-            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-            { path = "${3rd}/luassert/library", words = {
-              "assert",
-            } },
-            {
-              path = "${3rd}/busted/library",
-              words = {
-                "describe",
-                "it",
-                "before_each",
-                "after_each",
-              },
-            },
-          },
-        },
-      },
-      "neovim/nvim-lspconfig",
-      {
-        "aznhe21/actions-preview.nvim",
-        event = "LspAttach",
-        opts = {
-          diff = {
-            algorithm = "patience",
-            ignore_whitespace = true,
-          },
-        },
-      },
-      {
-        "brenoprata10/nvim-highlight-colors",
-        event = { "BufReadPre", "BufNewFile" },
-        opts = {
-          render = "virtual",
-          virtual_symbol = "■",
-          enable_named_colors = false,
-          enable_tailwind = true,
-        },
-      },
-      {
-        "rachartier/tiny-code-action.nvim",
-        dependencies = {
-          { "nvim-lua/plenary.nvim" },
-        },
-        event = "LspAttach",
-        opts = {
-          backend = "delta",
-          picker = {
-            "snacks",
-            opts = {
-              layout = {
-                preset = "dropdown",
-              },
-            },
+    "folke/lazydev.nvim",
+    ft = "lua", -- only load on lua files
+    opts = {
+      library = {
+        -- See the configuration section for more details
+        -- Load luvit types when the `vim.uv` word is found
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        { path = "${3rd}/luassert/library", words = {
+          "assert",
+        } },
+        {
+          path = "${3rd}/busted/library",
+          words = {
+            "describe",
+            "it",
+            "before_each",
+            "after_each",
           },
         },
       },
     },
-    config = function()
-      require("mason").setup()
-      local on_lsp_attach = function(client, bufnr)
-        local lsp_map = function(keys, func, desc)
-          if desc then
-            desc = "LSP: " .. desc
-          end
-
-          vim.keymap.set("n", keys, func, { noremap = true, buffer = bufnr, desc = desc, silent = true })
-        end
-
-        lsp_map("<leader>ca", function()
-          require("tiny-code-action").code_action {}
-        end, "Code Action")
-        lsp_map("K", function()
-          if client.name == "rust-analyzer" then
-            vim.cmd.RustLsp { "hover", "actions" }
-          else
-            vim.lsp.buf.hover()
-          end
-        end, "Hover Documentation")
-        lsp_map("<leader>rn", vim.lsp.buf.rename, "Rename")
-        lsp_map("gD", vim.lsp.buf.definition, "Goto Declaration")
-        lsp_map("gi", vim.lsp.buf.implementation, "Goto Implementation")
-        lsp_map("gd", "<C-]>", "[G]oto [D]efinition")
-        lsp_map("<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
-
-        -- Various picker for lsp related stuff
-        if Snacks and Snacks.picker then
-          lsp_map("gr", Snacks.picker.lsp_references, "[G]oto [R]eferences")
-          lsp_map("gi", Snacks.picker.lsp_implementations, "[G]oto [I]mplementations")
-          lsp_map("<A-t>", Snacks.picker.lsp_type_definitions, "[G]oto [T]ype Definitions")
-          lsp_map("<D-l>", Snacks.picker.lsp_workspace_symbols, "Search workspace symbols")
-          lsp_map("<leader>ss", Snacks.picker.lsp_symbols, "[S]earch [S]ymbols")
-        end
-
-        lsp_map("<leader>lr", function()
-          vim.cmd "LspRestart"
-        end, "Lsp [R]eload")
-        lsp_map("<leader>li", function()
-          vim.cmd "LspInfo"
-        end, "Lsp [R]eload")
-        lsp_map("<leader>lh", function()
-          vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }, { bufnr })
-        end, "Lsp toggle inlay [h]ints")
-      end
-
-      -- vim.diagnostic.config { virtual_lines = true }
-      vim.diagnostic.config { virtual_text = true }
-
-      -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
-      -- optimizes cpu usage source https://github.com/neovim/neovim/issues/23291
-      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
-
-      vim.diagnostic.config {
-        signs = {
-          text = {
-            [vim.diagnostic.severity.ERROR] = "󰚌 ",
-            [vim.diagnostic.severity.WARN] = " ",
-            [vim.diagnostic.severity.INFO] = " ",
-            [vim.diagnostic.severity.HINT] = "󱧡 ",
-          },
-          numhl = {
-            [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
-            [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
-            [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
-            [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
-          },
-          texthl = {
-            [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
-            [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
-            [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
-            [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
-          },
-        },
-      }
-
-      -- Your existing floating preview override
-      local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-      function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-        opts = opts or {}
-        return orig_util_open_floating_preview(contents, syntax, opts, ...)
-      end
-
-      -- Set up global defaults first
-      vim.lsp.config("*", {
-        capabilities = capabilities,
-        on_attach = on_lsp_attach,
-        root_markers = { ".git" },
-      })
-
-      vim.lsp.config("lua_ls", {
-        settings = {
-          Lua = {
-            runtime = { version = "LuaJIT" },
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-          },
-        },
-      })
-
-      vim.lsp.config("bashls", {
-        settings = { includeAllWorkspaceSymbols = true },
-      })
-
-      vim.lsp.config("ts_ls", {
-        on_attach = on_lsp_attach,
-      })
-
-      vim.lsp.config("tailwindcss", {
-        settings = {
-          tailwindCSS = {
-            experimental = {
-              classRegex = {
-                { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-                { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-              },
-            },
-          },
-        },
-        filetypes = {
-          "html",
-          "css",
-          "scss",
-          "javascript",
-          "javascriptreact",
-          "typescript",
-          "typescriptreact",
-          "vue",
-          "svelte",
-          "astro",
-          "rescript",
-        },
-      })
-
-      vim.lsp.enable "lua_ls"
-      vim.lsp.enable "ts_ls"
-      vim.lsp.enable "html"
-      vim.lsp.enable "tailwindcss"
-      vim.lsp.enable "eslint"
-      vim.lsp.enable "jsonls"
-      vim.lsp.enable "cssls"
-      vim.lsp.enable "astro"
-
-    end,
   },
+  "neovim/nvim-lspconfig",
+  {
+    "aznhe21/actions-preview.nvim",
+    event = "LspAttach",
+    opts = {
+      diff = {
+        algorithm = "patience",
+        ignore_whitespace = true,
+      },
+    },
+  },
+  {
+    "brenoprata10/nvim-highlight-colors",
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      render = "virtual",
+      virtual_symbol = "■",
+      enable_named_colors = false,
+      enable_tailwind = true,
+    },
+  },
+  {
+    "rachartier/tiny-code-action.nvim",
+    dependencies = {
+      { "nvim-lua/plenary.nvim" },
+    },
+    event = "LspAttach",
+    opts = {
+      backend = "delta",
+      picker = {
+        "snacks",
+        opts = {
+          layout = {
+            preset = "dropdown",
+          },
+        },
+      },
+    },
+  },
+},
+config = function()
+  require("mason").setup()
+  local on_lsp_attach = function(client, bufnr)
+    local lsp_map = function(keys, func, desc)
+      if desc then
+        desc = "LSP: " .. desc
+      end
+
+      vim.keymap.set("n", keys, func, { noremap = true, buffer = bufnr, desc = desc, silent = true })
+    end
+
+    lsp_map("<leader>ca", function()
+      require("tiny-code-action").code_action {}
+    end, "Code Action")
+    lsp_map("K", function()
+      if client.name == "rust-analyzer" then
+        vim.cmd.RustLsp { "hover", "actions" }
+      else
+        vim.lsp.buf.hover()
+      end
+    end, "Hover Documentation")
+    lsp_map("<leader>rn", vim.lsp.buf.rename, "Rename")
+    lsp_map("gD", vim.lsp.buf.definition, "Goto Declaration")
+    lsp_map("gi", vim.lsp.buf.implementation, "Goto Implementation")
+    lsp_map("gd", "<C-]>", "[G]oto [D]efinition")
+    lsp_map("<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
+
+    -- Various picker for lsp related stuff
+    if Snacks and Snacks.picker then
+      lsp_map("gr", Snacks.picker.lsp_references, "[G]oto [R]eferences")
+      lsp_map("gi", Snacks.picker.lsp_implementations, "[G]oto [I]mplementations")
+      lsp_map("<A-t>", Snacks.picker.lsp_type_definitions, "[G]oto [T]ype Definitions")
+      lsp_map("<D-l>", Snacks.picker.lsp_workspace_symbols, "Search workspace symbols")
+      lsp_map("<leader>ss", Snacks.picker.lsp_symbols, "[S]earch [S]ymbols")
+    end
+
+    lsp_map("<leader>lr", function()
+      vim.cmd "LspRestart"
+    end, "Lsp [R]eload")
+    lsp_map("<leader>li", function()
+      vim.cmd "LspInfo"
+    end, "Lsp [R]eload")
+    lsp_map("<leader>lh", function()
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }, { bufnr })
+    end, "Lsp toggle inlay [h]ints")
+  end
+
+  -- vim.diagnostic.config { virtual_lines = true }
+  vim.diagnostic.config { virtual_text = true }
+
+  -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+  -- optimizes cpu usage source https://github.com/neovim/neovim/issues/23291
+  capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
+
+  vim.diagnostic.config {
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = "󰚌 ",
+        [vim.diagnostic.severity.WARN] = " ",
+        [vim.diagnostic.severity.INFO] = " ",
+        [vim.diagnostic.severity.HINT] = "󱧡 ",
+      },
+      numhl = {
+        [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+        [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+        [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+        [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+      },
+      texthl = {
+        [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+        [vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+        [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+        [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+      },
+    },
+  }
+
+  -- Your existing floating preview override
+  local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+  function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+    opts = opts or {}
+    return orig_util_open_floating_preview(contents, syntax, opts, ...)
+  end
+
+  -- Set up global defaults first
+  vim.lsp.config("*", {
+    capabilities = capabilities,
+    on_attach = on_lsp_attach,
+    root_markers = { ".git" },
+  })
+
+  vim.lsp.config("lua_ls", {
+    settings = {
+      Lua = {
+        runtime = { version = "LuaJIT" },
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+      },
+    },
+  })
+
+  vim.lsp.config("bashls", {
+    settings = { includeAllWorkspaceSymbols = true },
+  })
+
+  vim.lsp.config("ts_ls", {
+    on_attach = on_lsp_attach,
+  })
+
+  vim.lsp.config("tailwindcss", {
+    settings = {
+      tailwindCSS = {
+        experimental = {
+          classRegex = {
+            { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+            { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+          },
+        },
+      },
+    },
+    filetypes = {
+      "html",
+      "css",
+      "scss",
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "vue",
+      "svelte",
+      "astro",
+      "rescript",
+    },
+  })
+
+  vim.lsp.enable "lua_ls"
+  vim.lsp.enable "ts_ls"
+  vim.lsp.enable "html"
+  vim.lsp.enable "tailwindcss"
+  vim.lsp.enable "eslint"
+  vim.lsp.enable "jsonls"
+  vim.lsp.enable "cssls"
+  vim.lsp.enable "astro"
+
+end,
+},
 ```
 
 As you can see I have some keybinds for that as well. And some of them are:

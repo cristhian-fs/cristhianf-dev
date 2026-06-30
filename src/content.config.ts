@@ -20,7 +20,7 @@ const craft = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/craft' }),
   schema: ({ image }) =>
     z.object({
-       title: z.string(),
+      title: z.string(),
       description: z.string(),
       date: z.coerce.date(),
       tags: z.array(z.string()).optional(),
@@ -57,6 +57,7 @@ const projects = defineCollection({
       startDate: z.coerce.date(),
       endDate: z.coerce.date().optional(),
       isCompleted: z.boolean().optional().default(false),
+      isArchived: z.boolean().optional().default(false),
     }),
 })
 

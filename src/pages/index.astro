@@ -123,10 +123,14 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
         </ul>
       </section>
       <section class="flex flex-col gap-2">
-        <Link href="/writing">
-          <h2 class="text-muted-foreground font-mono text-sm font-medium">
-            /writing
-          </h2>
+        <Link
+          href="/writing"
+          class={cn(
+            buttonVariants({ size: 'sm', variant: 'link' }),
+            'w-fit px-0 text-muted-foreground hover:text-foreground',
+          )}
+        >
+          /writing
         </Link>
         <ul class="flex flex-col gap-2">
           {

@@ -8,7 +8,7 @@ import { getAllProjects } from '@/lib/data-utils'
 const projects = await getAllProjects()
 const completedProjects = projects.filter((project) => project.data.isCompleted)
 const uncompletedProjects = projects.filter(
-  (project) => !project.data.isCompleted,
+  (project) => !project.data.isCompleted && !project.data.isArchived,
 )
 ---
 
