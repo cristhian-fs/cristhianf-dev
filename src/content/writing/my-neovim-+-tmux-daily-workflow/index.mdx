@@ -1,0 +1,245 @@
+---
+title: 'My Neovim + Tmux Daily Workflow'
+description: 'How did I set up my terminal to do everything'
+date: 2026-06-23
+tags: ['coding', 'neovim', 'tmux', 'productivity']
+---
+
+As a linux oficial larper/entushiast, I like to spend most part of my working time on the terminal, and for that I need a way to persist the state between sessions, move easily between sessions, windows and panes.
+
+That's why I choose neovim+tmux with my main daily driver tools, it's super based and I can on the terminal to do almost everything. And here I'll cover all the things I did to set up this both tools, and also some good maps that I did on my neovim config to speed up some actions.
+
+---
+
+## 1. The Prefix Swap: Ctrl+a instead of Ctrl+b
+
+This is the most ergonomic change in any tmux config. On the default `Ctrl+b`, it forces you to fold your left hand, while `Ctrl+a` is where your pinky finger already lives.
+
+```bash title="~/.tmux.conf"
+# ──────────────────────────────────────────
+#  Prefix: Ctrl+a (more ergonomic than Ctrl+b)
+# ──────────────────────────────────────────
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+```
+
+`bind C-a send-prefix` means I can still send it to nested sessions.
+
+---
+
+## 2. Seamless Vim/Tmux Pane Navigation (the killer hack)
+
+To have a clean navigation between my neovim windows and tmux panes without having to change the keybinding that I'll need to use, I use [`vim-tmux-navigator`](https://github.com/christoomey/vim-tmux-navigator) plugin with the `is_vim` detection pattern on my `~/.tmux.conf` file.
+
+```lua title="lua/plugins/vim-tmux-navigator.lua"
+return {
+  "christoomey/vim-tmux-navigator",
+  cmd = {
+    "TmuxNavigateLeft",
+    "TmuxNavigateDown",
+    "TmuxNavigateUp",
+    "TmuxNavigateRight",
+    "TmuxNavigatePrevious",
+    "TmuxNavigatorProcessList",
+  },
+  keys = {
+    { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
+    { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
+    { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
+    { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+    { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+  },
+}
+```
+
+```bash title="~/.tmux.conf"
+# vim-tmux-navigator
+# Smart pane switching with awareness of Vim splits.
+# See: https://github.com/christoomey/vim-tmux-navigator
+vim_pattern='(\S+/)?g?\.?(view|l?n?vim?x?|fzf)(diff)?(-wrapped)?'
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+    | grep -iqE '^[^TXZ ]+ +${vim_pattern}$'"
+bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
+bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
+bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
+bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
+tmux_version='$(tmux -V | sed -En "s/^tmux ([0-9]+(.[0-9]+)?).*/\1/p")'
+if-shell -b '[ "$(echo "$tmux_version < 3.0" | bc)" = 1 ]' \
+    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\'  'select-pane -l'"
+if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
+    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\\\'  'select-pane -l'"
+
+bind-key -T copy-mode-vi 'C-h' select-pane -L
+bind-key -T copy-mode-vi 'C-j' select-pane -D
+bind-key -T copy-mode-vi 'C-k' select-pane -U
+bind-key -T copy-mode-vi 'C-l' select-pane -R
+bind-key -T copy-mode-vi 'C-\' select-pane -l
+```
+
+The `ps -o comm=` check is the clever bit: tmux inspects whether the focused process is vim before deciding to route the keypress.
+
+---
+
+## 3. Session Persistence Across Reboots
+
+`tmux-resurrect` + `tmux-continuum` (auto-save every 10 min, auto-restore on start). Combined with `@resurrect-capture-pane-contents 'on'` you get your terminal scrollback back too. This is the "I never lose context" section.
+
+```bash title="~/.tmux.conf"
+# Save & restore sessions (persists across reboots)
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+
+# ──────────────────────────────────────────
+#  Resurrect & Continuum
+# ──────────────────────────────────────────
+set -g @resurrect-capture-pane-contents 'on'
+set -g @continuum-restore 'on'          # auto-restore on tmux start
+set -g @continuum-save-interval '10'    # auto-save every 10 min
+```
+
+---
+
+## 4. FZF Session Switching (prefix + S)
+
+`tmux-fzf-session-switch` gives me a fuzzy picker for sessions. Combine this with `tmux-sessionist's prefix + g/C/X/@` and you have a full session management layer without leaving the keyboard.
+
+---
+
+## 5. Status Bar with Live Spotify + Prefix Indicator
+
+My tmux status bar hasn't that much information, I've personalized it just with the things I found helpful and some rice to be super based ngl.
+The left side of it shows the name of the current session, which switches the colors when prefix is held, and the windows of that session.
+The prefix indicator `(#{?client_prefix,...})` is a small thing that makes tmux feel way more intentional. The Spotify integration is a conversation piece.
+
+```bash title="~/.tmux.conf"
+# ──────────────────────────────────────────
+#  Status
+# ──────────────────────────────────────────
+set -g status-position top
+set -g status-style bg=#101011,fg=#e7e7e7
+
+set -g status-left-length 40
+set -g status-left "#{?client_prefix,#[fg=#090909 bg=#f2777a bold],#[fg=#f2777a bold]} [ #S ]"
+set -g status-right-length 100
+set -g status-right "#[fg=#8a8f98][ #(playerctl --player=spotify metadata --format '{{ artist }} - {{ title }}' 2/dev/null) ] [ %H:%M ] [ %d/%m/%Y ]"
+
+set -g window-status-current-format "#[bg=#090909,fg=#f1d59d,bold] [ #I #W ]"
+set -g window-status-format "#[bg=#101011,fg=#97979a] #I #W "
+```
+
+---
+
+## 6. Harpoon: My Buffer Switcher
+
+For fast navigation between buffers, I'm now trying to get used to [harpoon](https://github.com/theprimeagen/harpoon), which allows me to save the current buffers that I'll work on with `<leader>a` and navigate to then with `<leader>1-4`, and also `<leader>h` to see the list of buffers.
+This is my current harpoon config:
+
+```lua
+  {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local harpoon = require "harpoon"
+      harpoon:setup()
+
+      -- add the current file
+      vim.keymap.set("n", "<leader>a", function()
+        harpoon:list():add()
+      end, { desc = "Add buffer to harpoon" })
+
+      -- open menu
+      vim.keymap.set("n", "<leader>h", function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end, { desc = "List harpoon buffers" })
+
+      vim.keymap.set("n", "<leader>x", function()
+        harpoon:list():remove()
+      end, { desc = "Remove current buffer from harpoon" })
+      vim.keymap.set("n", "<leader>X", function()
+        harpoon:list():clear()
+      end, { desc = "Remove all buffers from harpoon" })
+      -- direct navigation - the 4 slots
+      vim.keymap.set("n", "<leader>1", function()
+        harpoon:list():select(1)
+      end, { desc = "Harpoon slot 1" })
+      vim.keymap.set("n", "<leader>2", function()
+        harpoon:list():select(2)
+      end, { desc = "Harpoon slot 2" })
+      vim.keymap.set("n", "<leader>3", function()
+        harpoon:list():select(3)
+      end, { desc = "Harpoon slot 3" })
+      vim.keymap.set("n", "<leader>4", function()
+        harpoon:list():select(4)
+      end, { desc = "Harpoon slot 4" })
+    end,
+  },
+```
+
+I have also another two useful keybinds for harpoon, which are `<leader>x` to remove the current buffer from harpoon, and `<leader>X` to remove all buffers from it.
+
+---
+
+## 7. The Smart Delete Hack
+
+Originally, I cloned [this repo](https://github.com/dmtrKovalenko/my-nvim-config), and it has on the `init.lua` file a function that maks a smart delete that it's so freaking good that I had to keep it as it was.
+
+```lua title="init.lua"
+local function smart_delete(key)
+  local l = vim.api.nvim_win_get_cursor(0)[1] -- Get the current cursor line number
+  local line = vim.api.nvim_buf_get_lines(0, l - 1, l, true)[1] -- Get the content of the current line
+  return (line:match "^%s*$" and '"_' or "") .. key -- If the line is empty or contains only whitespace, use the black hole register
+end
+
+local keys = { "d", "dd", "x", "c", "s", "C", "X" } -- Define a list of keys to apply the smart delete functionality
+
+-- Set keymaps for both normal and visual modes
+for _, key in pairs(keys) do
+  vim.keymap.set({ "n", "v" }, key, function()
+    return smart_delete(key)
+  end, { noremap = true, expr = true, desc = "Smart delete" })
+end
+```
+
+---
+
+## 8. Auto-save on Leave
+
+```lua
+vim.api.nvim_create_autocmd({ "InsertLeave", "FocusLost", "BufLeave" }, {
+    command = "silent! wa",
+})
+```
+
+I never manually save. Every time I leave insert mode or switch away, the buffer saves. No swap files either. Combined with persistent undo (undofile = true) I can get the safety without the ceremony.
+
+---
+
+## 9. `<C-n>` / `<C-n>` in Visual: Repeatable Multi-cursor–style Editing
+
+```lua
+map("n", "<C-n>", "\*Ncgn")
+map("x", "<C-n>", [[y/\V<C-R>=escape(@", '/\')<CR><CR>Ncgn]])
+```
+
+This is the "poor man's multi-cursor" — I highlight a word, hit `<C-n>`, make a change, hit . to repeat on the next occurrence.
+
+---
+
+## 10. Splits That Inherit CWD
+
+```bash title="~/.tmux.conf"
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+bind c new-window -c "#{pane_current_path}"
+```
+
+New panes and windows open in the directory of the current pane, not the tmux
+launch dir. Small detail, massive QoL
+
+---
+
+## Dotfiles
+
+You can also check my neovim dotfiles [here](https://github.com/cristhian-fs/nvim-config)
