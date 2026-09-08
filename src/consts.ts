@@ -1,4 +1,4 @@
-import type { IconMap, SocialLink, Site, Tech } from '@/types'
+import type { IconMap, SocialLink, Site, TechArea } from '@/types'
 
 export const SITE: Site = {
   title: 'Cristhian F.',
@@ -58,66 +58,46 @@ export const ICON_MAP: IconMap = {
   RSS: 'lucide:rss',
 }
 
-export const TECHSTACK: Tech[] = [
+export const TECHSTACK: TechArea[] = [
   {
-    name: 'Astro',
-    href: 'https://astro.build/',
-    icon: 'astro',
-    highlightColor: 'oklch(0.7036_0.2857_324.51)',
+    area: 'Languages',
+    items: [
+      { name: 'Typescript', icon: 'typescript' },
+      { name: 'Javascript', icon: 'javascript' },
+    ],
   },
   {
-    name: 'React',
-    href: 'https://react.dev/',
-    icon: 'react',
+    area: 'Frontend',
+    items: [
+      {
+        name: 'Astro',
+        href: 'https://astro.build/',
+        icon: 'astro',
+        highlightColor: 'oklch(0.7036_0.2857_324.51)',
+      },
+      { name: 'React', href: 'https://react.dev/', icon: 'react' },
+      { name: 'Next.js', href: 'https://nextjs.org/', icon: 'next' },
+      { name: 'Tailwindcss', href: 'https://tailwindcss.com/', icon: 'tailwind' },
+    ],
   },
   {
-    name: 'Next.js',
-    href: 'https://nextjs.org/',
-    icon: 'next',
+    area: 'Backend',
+    items: [
+      { name: 'Hono', href: 'https://hono.dev/', icon: 'hono' },
+      { name: 'Prisma', href: 'https://www.prisma.io/', icon: 'prisma' },
+      { name: 'Drizzle', href: 'https://orm.drizzle.team/', icon: 'drizzle' },
+      { name: 'Firebase', href: 'https://firebase.google.com/', icon: 'firebase' },
+    ],
   },
   {
-    name: 'Tailwindcss',
-    href: 'https://tailwindcss.com/',
-    icon: 'tailwind',
+    area: 'Infrastructure',
+    items: [{ name: 'Docker', icon: 'docker' }],
   },
   {
-    name: 'Prisma',
-    href: 'https://www.prisma.io/',
-    icon: 'prisma',
-  },
-  {
-    name: 'Drizzle',
-    href: 'https://orm.drizzle.team/',
-    icon: 'drizzle',
-  },
-  {
-    name: 'Firebase',
-    href: 'https://firebase.google.com/',
-    icon: 'firebase',
-  },
-  {
-    name: 'Hono',
-    href: 'https://hono.dev/',
-    icon: 'hono',
-  },
-  {
-    name: 'Javascript',
-    icon: 'javascript',
-  },
-  {
-    name: 'Typescript',
-    icon: 'typescript',
-  },
-  {
-    name: 'neovim',
-    icon: 'neovim',
-  },
-  {
-    name: 'Bash Script',
-    icon: 'bash',
-  },
-  {
-    name: 'Docker',
-    icon: 'docker',
+    area: 'Tools',
+    items: [
+      { name: 'neovim', icon: 'neovim' },
+      { name: 'Bash Script', icon: 'bash' },
+    ],
   },
 ]

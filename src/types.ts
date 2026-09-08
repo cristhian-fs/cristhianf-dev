@@ -24,3 +24,8 @@ export type Tech = {
   icon: string
   highlightColor?: string
 }
+
+export type TechArea = {
+  area: string
+  items: Tech[]
+}
